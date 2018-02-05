@@ -9,15 +9,15 @@ using System.Data.Common;
 
 namespace MD_DataMigration.Data
 {
-    public class DatabaseFactory
+    public class DatabaseFactory: IDisposable
     {
         private DbConnection connection = null;
 
         public DatabaseFactory(string conn)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["MariaDB"];
+        var connectionString = ConfigurationManager.ConnectionStrings[conn];
             var provider = connectionString.ProviderName;
-            var factory = DbProviderFactories.GetFactory(provider);
+            var factory = DbProviderFactories.GetFactory(provider); 
             connection = factory.CreateConnection();
             connection.ConnectionString = connectionString.ConnectionString;
             connection.Open();
@@ -54,6 +54,14 @@ namespace MD_DataMigration.Data
             dbCommand.CommandText = commandText;
             
             return dbCommand.ExecuteNonQuery();
+        }
+
+        public void Dispose()
+        {
+            if (connection != null)
+            {
+                connection.Close();
+            }
         }
     }
 }
