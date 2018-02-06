@@ -15,7 +15,8 @@ namespace MD_DataMigration.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             NIXService nix = new NIXService();
-            nix.TestConnection();
+            //nix.TestConnection();
+            nix.TestConnectionParam();
 
         }
 

@@ -12,7 +12,7 @@ namespace MD_DataMigration.Service.MDPARK
     {
         public void TestConnection()
         {
-            using (MD_DataMigration.Data.DatabaseFactory factory = new MD_DataMigration.Data.DatabaseFactory("MariaDb"))
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory("MariaDb"))
             {
                 DbDataReader dr = factory.ExecuteReader("select * from user", CommandType.Text, null);
                 if (dr.HasRows)
