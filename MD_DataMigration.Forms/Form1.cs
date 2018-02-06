@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using MD_DataMigration.Service;
 using MD_DataMigration.Service.NIX;
+using MD_DataMigration.Service.UISARANG;
 
 namespace MD_DataMigration.Forms
 {
@@ -23,6 +24,12 @@ namespace MD_DataMigration.Forms
         private void button2_Click(object sender, EventArgs e)
         {
            
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            UISARANGService uISARANGService = new UISARANGService();
+            uISARANGService.TestConnection();
         }
     }
 }

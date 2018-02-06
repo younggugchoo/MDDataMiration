@@ -45,6 +45,7 @@
     <Compile Include="MDPARK\MDPARKService.cs" />
     <Compile Include="NIX\NIXService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UISARANG\UISARANGService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logger\Logger.csproj">

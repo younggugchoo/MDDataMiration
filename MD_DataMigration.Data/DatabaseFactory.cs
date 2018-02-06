@@ -5,6 +5,7 @@ using System.Data;
 using System.Text;
 using MySql.Data.MySqlClient;
 using System.Data.SqlClient;
+using iAnywhere.Data.SQLAnywhere;
 
 namespace MD_DataMigration.Data
 {
@@ -79,6 +80,10 @@ namespace MD_DataMigration.Data
                         case "System.Data.SqlClient.SqlConnection":
                             SqlDataAdapter sqlDa = new SqlDataAdapter((SqlCommand)dbCommand);
                             da = (DataAdapter)sqlDa;
+                            break;
+                        case "iAnywhere.Data.SQLAnywhere.SAConnection":
+                            SADataAdapter syDa = new SADataAdapter((SACommand)dbCommand);
+                            da = (DataAdapter)syDa;
                             break;
                         default:
                             break;
