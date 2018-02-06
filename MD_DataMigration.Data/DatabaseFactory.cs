@@ -3,12 +3,15 @@ using System.Configuration;
 using System.Data.Common;
 using System.Data;
 using System.Text;
+using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 
 namespace MD_DataMigration.Data
 {
     public class DatabaseFactory: IDisposable
     {
         private DbConnection connection = null;
+        //private string mConnectionString = "";
 
         public DatabaseFactory(string conn)
         {
@@ -17,59 +20,124 @@ namespace MD_DataMigration.Data
             var factory = DbProviderFactories.GetFactory(provider); 
             connection = factory.CreateConnection();
             connection.ConnectionString = connectionString.ConnectionString;
+            //mConnectionString = connection.ConnectionString;
             connection.Open();
+            Logger.Logger.INFO(string.Format("open database:{0}", connection.Database));
         }
 
         public DbCommand CraeteCommand()
         {
             return connection.CreateCommand();
         }
-
+        
         public DbDataReader ExecuteReader(string commandText, System.Data.CommandType commandType, params IDbDataParameter[] paramValues)
         {
             if (connection == null) throw new ArgumentException("connection");
             using (DbCommand dbCommand = CraeteCommand())
             {
-                dbCommand.CommandText = commandText;
-                dbCommand.CommandType = commandType;
-
-                dbCommand.Prepare();
-                if (paramValues != null) {
-                    AttachParameters(dbCommand, paramValues);
-                }
-
-                Logger.Logger.INFO(dbCommand.CommandText);
-                if (paramValues != null)
+                try
                 {
-                    StringBuilder sbParam = new StringBuilder();
+                    dbCommand.CommandText = commandText;
+                    dbCommand.CommandType = commandType;
 
-                    foreach(IDbDataParameter p in paramValues)
-                    {
-                        sbParam.AppendFormat("{0}:{1},",  p.ParameterName, p.Value);
-                    }
-                    Logger.Logger.INFO(sbParam.ToString());
+                    dbCommand.Prepare();
+                    if (paramValues != null) AttachParameters(dbCommand, paramValues);
+                    LoggingSqlStatement(dbCommand, paramValues);
+
+                    return dbCommand.ExecuteReader();
                 }
-                return dbCommand.ExecuteReader();
+                catch (Exception ex)
+                {
+                    Logger.Logger.DEBUG(ex.Message, ex);
+                    throw ex;
+                }
+                
             }
         }
 
-        public Object ExecuteScalar(string commandText, DbParameter[] param)
+        public DataSet ExcuteDatSet(string commandText, CommandType commandType, params IDbDataParameter[] paramValues)
         {
-            DbCommand dbCommand = CraeteCommand();
-            dbCommand.CommandType = System.Data.CommandType.Text;
-            dbCommand.CommandText = commandText;
-            
+            if (connection == null) throw new ArgumentException("connection");
+            using (DbCommand dbCommand = CraeteCommand())
+            {
+                try
+                {
+                    DataSet retRs = new DataSet();
+                    dbCommand.CommandText = commandText;
+                    dbCommand.CommandType = commandType;
+                    dbCommand.Prepare();
 
-            return dbCommand.ExecuteScalar();
+                    if (paramValues != null) AttachParameters(dbCommand, paramValues);
+
+                    DataAdapter da = null;
+                    switch (dbCommand.Connection.ToString())
+                    {
+                        case "MySql.Data.MySqlClient.MySqlConnection":
+                            MySqlDataAdapter myda = new MySqlDataAdapter((MySqlCommand)dbCommand);
+                            da = (DataAdapter)myda;
+                            break;
+                        case "System.Data.SqlClient.SqlConnection":
+                            SqlDataAdapter sqlDa = new SqlDataAdapter((SqlCommand)dbCommand);
+                            da = (DataAdapter)sqlDa;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    LoggingSqlStatement(dbCommand, paramValues);
+
+                    if (da == null) throw new Exception("no provider");
+
+                    da.Fill(retRs);
+                    return retRs;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Logger.DEBUG(ex.Message, ex);
+                    throw ex;
+                }
+            }
+            
+        }
+        
+        public int ExecuteNonQuery(string commandText, params IDbDataParameter[] paramValues)
+        {
+            if (connection == null) throw new ArgumentException("connection");
+            using (DbCommand dbCommand = CraeteCommand())
+            {
+                try
+                {
+                    dbCommand.CommandType = System.Data.CommandType.Text;
+                    dbCommand.CommandText = commandText;
+
+                    dbCommand.Prepare();
+                    if (paramValues != null) AttachParameters(dbCommand, paramValues);
+                    LoggingSqlStatement(dbCommand, paramValues);
+
+                    return dbCommand.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Logger.DEBUG(ex.Message, ex);
+                    throw ex;
+                }
+            }
+
         }
 
-        public int ExecuteNonQuery(string commandText, params string[] param)
+        private void LoggingSqlStatement(DbCommand dbCommand, params IDbDataParameter[] paramValues)
         {
-            DbCommand dbCommand = CraeteCommand();
-            dbCommand.CommandType = System.Data.CommandType.Text;
-            dbCommand.CommandText = commandText;
-            
-            return dbCommand.ExecuteNonQuery();
+            Logger.Logger.DEBUG(dbCommand.CommandText);
+            if (paramValues != null)
+            {
+                StringBuilder sbParam = new StringBuilder();
+                sbParam.AppendFormat("parameters:");
+                foreach (IDbDataParameter p in paramValues)
+                {
+                    sbParam.AppendFormat("{0}->{1},", p.ParameterName, p.Value);
+                }
+                Logger.Logger.DEBUG(sbParam.ToString());
+            }
         }
 
         private static void AttachParameters(DbCommand command, IDbDataParameter[] commandParameters)
@@ -99,6 +167,7 @@ namespace MD_DataMigration.Data
             if (connection != null)
             {
                 connection.Close();
+                Logger.Logger.INFO(string.Format("close database:{0}", connection.Database));
             }
         }
     }

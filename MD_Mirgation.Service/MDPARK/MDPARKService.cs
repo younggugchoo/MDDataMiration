@@ -23,7 +23,7 @@ namespace MD_DataMigration.Service.MDPARK
                     }
                 }
 
-                Logger.Logger.INFO();
+                
             }
         }
     }

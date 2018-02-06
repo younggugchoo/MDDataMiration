@@ -43,14 +43,36 @@ namespace MD_DataMigration.Service.NIX
                 };
 
                 //DbDataReader dr = factory.ExecuteReader("select * from products;", CommandType.Text, null);
-                DbDataReader dr = factory.ExecuteReader("select * from users;", CommandType.Text, null);
-                if (dr.HasRows)
+                //DbDataReader dr = factory.ExecuteReader("select * from test.users;", CommandType.Text, null);
+                DataSet ds = factory.ExcuteDatSet("select * from users", CommandType.Text);
+
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    while (dr.Read())
-                    {                     
-                        Logger.Logger.INFO(dr["username"].ToString());
-                    }
+                    Console.WriteLine(r["username"]);
                 }
+
+                parameter = new MySqlParameter[]
+                {
+                    new MySqlParameter("@USERNAME", "asfsafd")
+                    , new MySqlParameter("@PASSWORD", "1234")
+                    , new MySqlParameter("@ENABLED", 1)
+                };
+
+                try
+                {
+                    factory.ExecuteNonQuery("insert into users (username, password, enabled)values(@USERNAME, @PASSWORD, @ENABLED)", parameter);
+                }
+                catch
+                {
+                }
+
+                //if (dr.HasRows)
+                //{
+                //    while (dr.Read())
+                //    {                     
+                //        Logger.Logger.INFO(dr["username"].ToString());
+                //    }
+                //}
             }
 
             using (Data.DatabaseFactory factory = new Data.DatabaseFactory("MSSQL_Test"))
@@ -61,14 +83,22 @@ namespace MD_DataMigration.Service.NIX
                     new SqlParameter("@BL_CO_CD", 118)
                 };
 
-                DbDataReader dr = factory.ExecuteReader("select top 10 * from T_MEM_M_IDV WHERE USE_F =@USE_F AND BL_CO_CD = @BL_CO_CD", CommandType.Text, parameter);
-                if (dr.HasRows)
+                //DbDataReader dr = factory.ExecuteReader("select top 10 * from T_MEM_M_IDV WHERE USE_F =@USE_F AND BL_CO_CD = @BL_CO_CD", CommandType.Text, parameter);
+                //if (dr.HasRows)
+                //{
+                //    while (dr.Read())
+                //    {
+                //        Logger.Logger.INFO(dr["MEM_KO_NM"].ToString());
+                //    }
+                //}
+
+                DataSet ds = factory.ExcuteDatSet("select top 10 * from T_MEM_M_IDV WHERE USE_F =@USE_F AND BL_CO_CD = @BL_CO_CD", CommandType.Text, parameter);
+
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    while (dr.Read())
-                    {
-                        Logger.Logger.INFO(dr["MEM_KO_NM"].ToString());
-                    }
+                    Console.WriteLine(r["MEM_KO_NM"]);
                 }
+
             }
 
 
