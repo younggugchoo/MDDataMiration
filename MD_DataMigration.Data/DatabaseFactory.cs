@@ -6,6 +6,7 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using System.Data.SqlClient;
 using iAnywhere.Data.SQLAnywhere;
+using System.Data.OleDb;
 
 namespace MD_DataMigration.Data
 {
@@ -13,6 +14,11 @@ namespace MD_DataMigration.Data
     {
         private DbConnection connection = null;
         //private string mConnectionString = "";
+
+        public DatabaseFactory()
+        {
+
+        }
 
         public DatabaseFactory(string conn)
         {
@@ -24,6 +30,18 @@ namespace MD_DataMigration.Data
             //mConnectionString = connection.ConnectionString;
             connection.Open();
             Logger.Logger.INFO(string.Format("open database:{0}", connection.Database));
+        }
+
+        public void DatabaseFactoryAccess(string fileName)
+        {
+            string path = ConfigurationManager.AppSettings.Get("MSAccessPath")  + fileName + ".mdb";
+            string connStr = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";User Id=admin;";
+
+            OleDbConnection conn = new OleDbConnection();
+            conn.ConnectionString = connStr;
+            conn.Open();
+
+            connection = conn;
         }
 
         public DbCommand CraeteCommand()
