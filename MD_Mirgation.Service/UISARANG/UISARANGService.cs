@@ -8,8 +8,13 @@ using System.Threading.Tasks;
 
 namespace MD_DataMigration.Service.UISARANG
 {
-    public class UISARANGService
+    public class UISARANGService: IDisposable
     {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         public void TestConnection()
         {
             using (Data.DatabaseFactory factory = new Data.DatabaseFactory("syBaseAnywhere"))

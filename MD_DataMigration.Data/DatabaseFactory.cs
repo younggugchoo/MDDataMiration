@@ -32,17 +32,24 @@ namespace MD_DataMigration.Data
             Logger.Logger.INFO(string.Format("open database:{0}", connection.Database));
         }
 
-        public void DatabaseFactoryAccess(string fileName)
+        public void DatabaseFactoryAccess(string databaseFileName)
         {
-            string path = ConfigurationManager.AppSettings.Get("MSAccessPath")  + fileName + ".mdb";
+            
+
+            string rootPath = ConfigurationManager.AppSettings.Get("byengcomRootPath");
+            string path = rootPath + "\\" + ConfigurationManager.AppSettings.Get(ConfigurationManager.AppSettings.Get(databaseFileName))+ "\\" + databaseFileName + ".mdb";
             string connStr = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";User Id=admin;";
 
             OleDbConnection conn = new OleDbConnection();
             conn.ConnectionString = connStr;
             conn.Open();
 
+            Logger.Logger.INFO(path);
+
             connection = conn;
         }
+
+      
 
         public DbCommand CraeteCommand()
         {
@@ -103,6 +110,10 @@ namespace MD_DataMigration.Data
                             SADataAdapter syDa = new SADataAdapter((SACommand)dbCommand);
                             da = (DataAdapter)syDa;
                             break;
+                        case "System.Data.OleDb.OleDbConnection":
+                            OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter((OleDbCommand)dbCommand);
+                            da = (DataAdapter)oleDbDataAdapter;
+                            break;
                         default:
                             break;
                     }
@@ -112,6 +123,8 @@ namespace MD_DataMigration.Data
                     if (da == null) throw new Exception("no provider");
 
                     da.Fill(retRs);
+
+                    Logger.Logger.INFO(string.Format("select counts:{0}", retRs.Tables[0].Rows.Count));
                     return retRs;
                 }
                 catch (Exception ex)
