@@ -7,8 +7,15 @@ using System.Text;
 
 namespace Logger
 {
-    public static class Logger
+
+    public delegate void LogEventHandler(string message);
+
+    public  class Logger
     {
+       
+
+        public static event LogEventHandler LogMessage;
+
         private static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void INFO(string strlog)
@@ -27,6 +34,8 @@ namespace Logger
         public static void DEBUG(string debug)
         {
             log.Debug(debug);
+
+            LogMessage?.Invoke(debug);
         }
 
         public static void WARN(string warn)

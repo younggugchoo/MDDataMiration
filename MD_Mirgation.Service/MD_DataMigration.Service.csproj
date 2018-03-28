@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseInfo.cs" />
     <Compile Include="BYEONGCOM\BYEONGCOMService.cs" />
     <Compile Include="IConvert.cs" />
     <Compile Include="MDPARK\MDPARKService.cs" />

@@ -11,125 +11,207 @@ namespace MD_DataMigration.Service.MDPARK.model
     /// </summary>
     public class AcPntnInfo
     {
-        //환자ID
+        /// <summary>
+        /// 환자ID
+        /// </summary>
         public string PtntId { get; set; }
 
-        //병원코드
+        /// <summary>
+        /// 병원코드
+        /// </summary>
         public string HosCd { get; set; }
 
-        //환자명
+        /// <summary>
+        /// 환자명
+        /// </summary>
         public string PtntNm { get; set; }
 
-        //영문명
+        /// <summary>
+        /// 영문명
+        /// </summary>
         public string EngNm { get; set; }
 
-        //주민등록번호1
+        /// <summary>
+        /// 주민등록번호1
+        /// </summary>
         public string ResRegNo1 { get; set; }
 
-        //주민등록번호2
+        /// <summary>
+        /// 주민등록번호2
+        /// </summary>
         public string ResRegNo2 { get; set; }
 
-        //생년월일
+        /// <summary>
+        /// 생년월일
+        /// </summary>
         public string BirthYmd { get; set; }
 
-        //성별
+        /// <summary>
+        /// 성별
+        /// </summary>
         public string Sex { get; set; }
 
-        //우편번호
+        /// <summary>
+        /// 우편번호
+        /// </summary>
         public string ZipNo { get; set; }
 
-        //주소
+        /// <summary>
+        /// 주소
+        /// </summary>
         public string Addr { get; set; }
 
-        //주소상세
+        /// <summary>
+        /// 주소상세
+        /// </summary>
         public string Addr2 { get; set; }
 
-        //휴대전화번호
+        /// <summary>
+        /// 휴대전화번호
+        /// </summary>
         public string MobNo { get; set; }
 
-        //전화번호1
+        /// <summary>
+        /// 전화번호1
+        /// </summary>
         public string TelNo1 { get; set; }
 
-        //전화번호1명칭
+        /// <summary>
+        /// 전화번호1명칭
+        /// </summary>
         public string TelNm1 { get; set; }
 
-        //전화번호2
+        /// <summary>
+        /// 전화번호2
+        /// </summary>
         public string TelNo2 { get; set; }
 
-        //전화번호2명칭
+        /// <summary>
+        /// 전화번호2명칭
+        /// </summary>
         public string TelNm2 { get; set; }
 
-        //전화번호3
+        /// <summary>
+        /// 전화번호3
+        /// </summary>
         public string TelNo3 { get; set; }
 
-        //전화번호3명칭
+        /// <summary>
+        /// 전화번호3명칭
+        /// </summary>
         public string TelNm3 { get; set; }
 
-        //외국인여부
+        /// <summary>
+        /// 외국인여부
+        /// </summary>
         public string FrgnrYn { get; set; }
 
-        //개인정보동의여부
+        /// <summary>
+        /// 개인정보동의여부
+        /// </summary>
         public string IndvdlinfoAgreYn { get; set; }
 
-        //만성질환관리여부
+        /// <summary>
+        /// 만성질환관리여부
+        /// </summary>
         public string ChdsesMngYn { get; set; }
 
-        //임산부여부
+        /// <summary>
+        /// 임산부여부
+        /// </summary>
         public string PrgncYn { get; set; }
 
-        //SMS수신여부
+        /// <summary>
+        /// SMS수신여부
+        /// </summary>
         public string SmsRcveYn { get; set; }
 
-        //EMail
+        /// <summary>
+        /// EMail
+        /// </summary>
         public string Email { get; set; }
 
-        //혈액형_ABO
+        /// <summary>
+        /// 혈액형_ABO
+        /// </summary>
         public string AboTy { get; set; }
 
-        //혈액형_RH
+        /// <summary>
+        /// 혈액형_RH
+        /// </summary>
         public string Rh { get; set; }
 
-        //VIP여부
+        /// <summary>
+        /// VIP여부
+        /// </summary>
         public string VipYn { get; set; }
 
-        //VIP메모
+        /// <summary>
+        /// VIP메모
+        /// </summary>
         public string VipMemo { get; set; }
 
-        //구환자ID
+        /// <summary>
+        /// 구환자ID
+        /// </summary>
         public string OldPtntId { get; set; }
 
-        //앱설치여부
+        /// <summary>
+        /// 앱설치여부
+        /// </summary>
         public string AppUseYn { get; set; }
 
-        //알레르기메모
+        /// <summary>
+        /// 알레르기메모
+        /// </summary>
         public string AlrgMemo { get; set; }
 
-        //메모
+        /// <summary>
+        /// 메모
+        /// </summary>
         public string Memo { get; set; }
 
-        //등록자ID
+        /// <summary>
+        /// 등록자ID
+        /// </summary>
         public string InsId { get; set; }
 
-        //등록일시
+        /// <summary>
+        /// 등록일시
+        /// </summary>
         public string InsDt { get; set; }
 
-        //수정자ID
+        /// <summary>
+        /// 수정자ID
+        /// </summary>
         public string UpdId { get; set; }
 
-        //수정일시
+        /// <summary>
+        /// 수정일시
+        /// </summary>
         public string UpdDt { get; set; }
 
-        //개인사진여부
+        /// <summary>
+        /// 개인사진여부
+        /// </summary>
         public string PhotoYn { get; set; }
 
-        //파일경로
+        /// <summary>
+        /// 파일경로
+        /// </summary>
         public string FilePath { get; set; }
 
-        //서버파일명
+        /// <summary>
+        /// 서버파일명
+        /// </summary>
         public string ServerFileNm { get; set; }
 
-        //앱설치일시
+        /// <summary>
+        /// 앱설치일시
+        /// </summary>
         public string AppUseDt { get; set; }
+
+
 
     }
 }

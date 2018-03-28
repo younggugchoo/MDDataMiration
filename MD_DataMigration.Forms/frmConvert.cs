@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MD_DataMigration.Service;
@@ -19,6 +20,12 @@ namespace MD_DataMigration.Forms
         public frmConvert()
         {
             InitializeComponent();
+           
+        }
+
+        private void frmConvert_Load(object sender, EventArgs e)
+        {
+           // Logger.TextBoxAppender.ConfigureTextBoxAppender(txtLog);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -29,7 +36,11 @@ namespace MD_DataMigration.Forms
 
         private void btnConvert_Click(object sender, EventArgs e)
         {
-            StartConvert();
+
+            Thread th = new Thread(new ThreadStart(StartConvert));
+            th.Start();
+
+            //StartConvert();
         }
 
         private void StartConvert()
@@ -40,6 +51,7 @@ namespace MD_DataMigration.Forms
             {
                 case 1:
                     convert = new BYEONGCOMService();
+                    
                     break;
                 default:
                     break;
@@ -47,8 +59,25 @@ namespace MD_DataMigration.Forms
 
             if (convert != null)
             {
-                convert.StartConvert(txtHosCd.Text);
+                convert.WorkingInfo += Convert_WorkingInfo;
+                BaseInfo baseInfo = new BaseInfo();
+
+                baseInfo.HosCd = txtHosCd.Text;
+
+                convert.StartConvert(baseInfo);
             }
+            
+        }
+
+        private void Convert_WorkingInfo(string message)
+        {
+
+            this.Invoke(new MethodInvoker(
+            delegate ()
+            {
+                lstWorkInfo.Items.Add(message);
+            }));
+
             
         }
 
@@ -68,5 +97,7 @@ namespace MD_DataMigration.Forms
                 }
             }
         }
+
+
     }
 }

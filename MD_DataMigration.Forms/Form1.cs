@@ -24,6 +24,11 @@ namespace MD_DataMigration.Forms
             InitializeComponent();
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             NIXService nix = new NIXService();
@@ -128,7 +133,9 @@ namespace MD_DataMigration.Forms
                 string txt = "public {0} {1} {get; set;}";
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-                    sb.AppendLine("//" + dr["column_comment"].ToString());
+                    sb.AppendLine("/// <summary>");
+                    sb.AppendLine("/// " + dr["column_comment"].ToString());
+                    sb.AppendLine("/// </summary>");
                     sb.Append(string.Format("public {0} {1}",   convertDataType(dr["data_type"].ToString()), ToPascalCase(dr["column_name"].ToString())));
                     sb.AppendLine(" {get; set;}");
                     sb.AppendLine();
@@ -164,5 +171,7 @@ namespace MD_DataMigration.Forms
             const string pattern = @"(-|_)\w{1}|^\w";
             return Regex.Replace(value, pattern, match => match.Value.Replace("-", string.Empty).Replace("_", string.Empty).ToUpper());
         }
+
+
     }
 }

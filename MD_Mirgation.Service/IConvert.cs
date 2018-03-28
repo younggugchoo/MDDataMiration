@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace MD_DataMigration.Service
 {
+
+    public delegate void LogEventHandler(string message);
+
     public interface IConvert
     {
-        void StartConvert(string hosCd);
 
-    }
+        event LogEventHandler WorkingInfo;
+        void StartConvert(BaseInfo baseInfo);
+
+    }   
 }

@@ -44,7 +44,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.lstWorkInfo = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -54,13 +54,13 @@
             this.txtLog.Location = new System.Drawing.Point(12, 418);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
+            this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(865, 204);
             this.txtLog.TabIndex = 0;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.rad3);
             this.groupBox1.Controls.Add(this.rad2);
             this.groupBox1.Controls.Add(this.rad1);
@@ -73,11 +73,11 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(239, 107);
+            this.button1.Location = new System.Drawing.Point(24, 174);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(89, 23);
             this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
+            this.button1.Text = "작업도구";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -116,6 +116,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.textBox4);
             this.groupBox2.Controls.Add(this.btnConvert);
             this.groupBox2.Controls.Add(this.label4);
@@ -206,24 +207,25 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "병원명";
             // 
-            // listBox1
+            // lstWorkInfo
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(367, 12);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(509, 394);
-            this.listBox1.TabIndex = 4;
+            this.lstWorkInfo.FormattingEnabled = true;
+            this.lstWorkInfo.Location = new System.Drawing.Point(367, 12);
+            this.lstWorkInfo.Name = "lstWorkInfo";
+            this.lstWorkInfo.Size = new System.Drawing.Size(509, 394);
+            this.lstWorkInfo.TabIndex = 4;
             // 
             // frmConvert
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(890, 636);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.lstWorkInfo);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtLog);
             this.Name = "frmConvert";
+            this.Load += new System.EventHandler(this.frmConvert_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -250,7 +252,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox lstWorkInfo;
         private System.Windows.Forms.Button button1;
     }
 }

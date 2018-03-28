@@ -11,10 +11,13 @@ using System.Transactions;
 
 namespace MD_DataMigration.Service.MDPARK
 {
-    public class MDPARKService: IDisposable
+    public class MDPARKService: IDisposable, IConvert
     {
+        BaseInfo baseInfo;
         string factoryName = "";
         Data.DatabaseFactory factory;
+
+        public event LogEventHandler WorkingInfo;
 
         public MDPARKService(string value)
         {
@@ -78,7 +81,7 @@ namespace MD_DataMigration.Service.MDPARK
 
         }
 
-        #region DataInsert
+        #region 환자정보입력
 
         /// <summary>
         /// 환자정보 입력
@@ -92,23 +95,29 @@ namespace MD_DataMigration.Service.MDPARK
                 {
                     using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
                     {
+                        WorkingInfo?.Invoke("InsertPntnInfo");
                         foreach (AcPntnInfo item in acPntnInfos)
                         {
                             factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
+                            
                         }
                     }
 
-                    //scope.Complete();
+                    scope.Complete();
                 }
                 
             }
             catch(Exception ex)
             {
-                
+                Logger.Logger.DEBUG(ex.Message, ex);
             }
         }
 
-        public string InsertPntnInfoSql()
+        /// <summary>
+        /// 환자정보 입력 쿼리생성
+        /// </summary>
+        /// <returns></returns>
+        private string InsertPntnInfoSql()
         {
             string strSql = @"
                     
@@ -128,7 +137,12 @@ namespace MD_DataMigration.Service.MDPARK
             return strSql;
         }
 
-        public MySqlParameter [] InsertPntnInfoParameter(AcPntnInfo actPntnInfo)
+        /// <summary>
+        /// 환자정보 입력 파라미터 설정
+        /// </summary>
+        /// <param name="actPntnInfo"></param>
+        /// <returns></returns>
+        private MySqlParameter [] InsertPntnInfoParameter(AcPntnInfo actPntnInfo)
         {
             MySqlParameter[] parameter = new MySqlParameter[]
             {
@@ -147,6 +161,11 @@ namespace MD_DataMigration.Service.MDPARK
         public void Dispose()
         {
 
+        }
+
+        public void StartConvert(BaseInfo baseInfo)
+        {
+            this.baseInfo = baseInfo;
         }
         #endregion
     }
