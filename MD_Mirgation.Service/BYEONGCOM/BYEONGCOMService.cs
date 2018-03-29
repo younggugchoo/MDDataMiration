@@ -214,6 +214,16 @@ namespace MD_DataMigration.Service.BYEONGCOM
             }
         }
 
+        public List<string> ConvertTaretItems()
+        {
+            List<string> targets = new List<string>();
+
+            targets.Add("환자정보");
+
+
+            return targets;
+        }
+
 
         #endregion
 
