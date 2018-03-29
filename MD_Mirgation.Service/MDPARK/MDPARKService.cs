@@ -18,6 +18,7 @@ namespace MD_DataMigration.Service.MDPARK
         Data.DatabaseFactory factory;
 
         public event LogEventHandler WorkingInfo;
+        public event EventHandler Convert_Completed;
 
         public MDPARKService(string value)
         {
@@ -89,28 +90,36 @@ namespace MD_DataMigration.Service.MDPARK
         /// <param name="acPntnInfo"></param>
         public void InsertPntnInfo(List<AcPntnInfo> acPntnInfos)
         {
-            try
+
+            using (TransactionScope scope = new TransactionScope())
             {
-                using (TransactionScope scope = new TransactionScope())
+                using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
                 {
-                    using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "InsertPntnInfo");
+                    foreach (AcPntnInfo item in acPntnInfos)
                     {
-                        WorkingInfo?.Invoke("InsertPntnInfo");
-                        foreach (AcPntnInfo item in acPntnInfos)
+                        try
                         {
                             factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
-                            
+                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS,  string.Format("success {0}", item.PtntId));
                         }
-                    }
+                        catch (Exception ex)
+                        {
+                            //변환실패 목록 저장
+                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL,  string.Format("fail {0} : {1}", item.PtntId, ex.Message));
+                        }
 
-                    scope.Complete();
+
+
+
+                    }
                 }
+
+                scope.Complete();
+            }
                 
-            }
-            catch(Exception ex)
-            {
-                Logger.Logger.DEBUG(ex.Message, ex);
-            }
+            
+           
         }
 
         /// <summary>
@@ -119,6 +128,7 @@ namespace MD_DataMigration.Service.MDPARK
         /// <returns></returns>
         private string InsertPntnInfoSql()
         {
+            // --(SELECT LPAD(max(ptnt_id) + 1, 8, '0') as ptnt_id FROM t_ac_ptnt_info ALIAS_FOR_SUBQUERY) 
             string strSql = @"
                     
                         insert into t_ac_ptnt_info
@@ -128,7 +138,8 @@ namespace MD_DataMigration.Service.MDPARK
                             , ptnt_nm
                         )values
                         (
-                            (SELECT LPAD(max(ptnt_id) + 1, 8, '0') as ptnt_id FROM t_ac_ptnt_info ALIAS_FOR_SUBQUERY) 
+                           
+                             @ptnt_id
                             , @hos_cd
                             , @ptnt_nm
                         )
@@ -146,7 +157,8 @@ namespace MD_DataMigration.Service.MDPARK
         {
             MySqlParameter[] parameter = new MySqlParameter[]
             {
-                new MySqlParameter("@hos_cd", actPntnInfo.HosCd)
+                new MySqlParameter("@ptnt_id", actPntnInfo.PtntId)
+                , new MySqlParameter("@hos_cd", actPntnInfo.HosCd)
                 , new MySqlParameter("@ptnt_nm", actPntnInfo.PtntNm)
 
             };

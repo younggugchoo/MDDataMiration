@@ -141,6 +141,7 @@ namespace MD_DataMigration.Data
             if (connection == null) throw new ArgumentException("connection");
             using (DbCommand dbCommand = CraeteCommand())
             {
+                int ret = 0;
                 try
                 {
                     dbCommand.CommandType = System.Data.CommandType.Text;
@@ -156,7 +157,9 @@ namespace MD_DataMigration.Data
                 {
                     Logger.Logger.DEBUG(ex.Message, ex);
                     throw ex;
+                    return 0;
                 }
+                
             }
 
         }
@@ -172,6 +175,8 @@ namespace MD_DataMigration.Data
                 {
                     sbParam.AppendFormat("{0}->{1},", p.ParameterName, p.Value);
                 }
+
+                sbParam.ToString().Remove(sbParam.ToString().Length - 1);
                 Logger.Logger.DEBUG(sbParam.ToString());
             }
         }

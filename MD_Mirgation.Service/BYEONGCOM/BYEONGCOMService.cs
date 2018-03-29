@@ -22,6 +22,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
         private MDPARKService mdParkService; 
 
         public event LogEventHandler WorkingInfo;
+        public event EventHandler Convert_Completed;
 
         public void Dispose()
         {
@@ -30,7 +31,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
         private void MdParkService_WorkingInfo(string message)
         {
-            WorkingInfo?.Invoke(message);
+            
         }
 
         public DbDataReader TestConnection()
@@ -64,30 +65,37 @@ namespace MD_DataMigration.Service.BYEONGCOM
         {
            
             mdParkService = new MDPARKService(TARGET_DB);
-            mdParkService.WorkingInfo += MdParkService_WorkingInfo;
+            mdParkService.WorkingInfo += MdParkService_WorkingInfo1;
             mdParkService.StartConvert(baseInfo);
 
             this.baseInfo = baseInfo;
 
-            try
-            {
+            //try
+            //{
                 Logger.Logger.INFO("BYEONGCOMService StartConvert");
-                WorkingInfo?.Invoke("BYEONGCOMService StartConvert");
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "BYEONGCOMService StartConvert");
 
                 //환자정보 변환
                 ConvertPntnInfo();
 
 
 
-                WorkingInfo?.Invoke("BYEONGCOMService EndConvert");
-            }
-            catch (Exception ex)
-            {                    
-                Logger.Logger.ERROR(ex.Message);
-                Logger.Logger.ERROR(ex.Source.ToString());
-                throw ex;
-            }
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "BYEONGCOMService EndConvert");
+                Convert_Completed?.Invoke(this, new EventArgs());
+            //}
+            //catch (Exception ex)
+            //{                    
+            //    Logger.Logger.ERROR(ex.Message);
+            //    Logger.Logger.ERROR(ex.Source.ToString());
+            //    Convert_Completed?.Invoke(this, new EventArgs());
+            //    throw ex;
+            //}
            
+        }
+
+        private void MdParkService_WorkingInfo1(CommonStatic.WORK_RESULT workResult, string message)
+        {
+            WorkingInfo?.Invoke(workResult,  message);
         }
 
         /// <summary>
@@ -95,20 +103,20 @@ namespace MD_DataMigration.Service.BYEONGCOM
         /// </summary>
         private void ConvertPntnInfo()
         {
-            try
-            {
-                WorkingInfo?.Invoke("환자정보 변환시작");
+            //try
+            //{
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "환자정보 변환시작");
                 List<AcPntnInfo> acPntnInfos = SelectPatientBaseInfo();
 
-                WorkingInfo?.Invoke(string.Format("변환대상 수:{0}", acPntnInfos.Count));
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  string.Format("변환대상 수:{0}", acPntnInfos.Count));
 
                 mdParkService.InsertPntnInfo(acPntnInfos);
-                WorkingInfo?.Invoke("환자정보 변환종료");
-            }
-            catch (Exception ex)
-            {
-                Logger.Logger.DEBUG(ex.Message, ex);
-            }
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "환자정보 변환종료");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Logger.DEBUG(ex.Message, ex);
+            //}
 
         }
 
@@ -128,7 +136,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 List<AcPntnInfo> lstAcPntnInfo = new List<AcPntnInfo>();
 
                 factory.DatabaseFactoryAccess("환자정보");
-                string strSql = @"SELECT
+                string strSql = @"SELECT TOP 100
 	                환자정보.[챠트번호]
                    ,환자정보.[수진자명]
                    ,환자정보.[주민등록]
@@ -194,6 +202,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 foreach(DataRow dr in ds.Tables[0].Rows)
                 {
                     acPntnInfo = new AcPntnInfo();
+                    acPntnInfo.PtntId = dr["챠트번호"].ToString();
                     acPntnInfo.HosCd = baseInfo.HosCd;
                     acPntnInfo.PtntNm = dr["수진자명"].ToString();
 
