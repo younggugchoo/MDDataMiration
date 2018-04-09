@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -47,7 +48,7 @@ namespace MD_DataMigration.Service.MDPARK
         }
         #endregion
 
-
+        #region //입력쿼리 생성, 입력 파라미터 생성 공통
         /// <summary>
         /// 테이블 컬럼을 조회해서 Class Propery를 생성
         /// </summary>
@@ -82,91 +83,200 @@ namespace MD_DataMigration.Service.MDPARK
 
         }
 
-        #region 환자정보입력
+        /// <summary>
+        /// 파라미터 생성
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private MySqlParameter[] InsertParameter<T>(T obj)
+        {
+            List<MySqlParameter> param = new List<MySqlParameter>();
+
+            Type t = obj.GetType();
+            PropertyInfo[] pi = t.GetProperties();
+
+            foreach (PropertyInfo p in pi)
+            {
+
+                Logger.Logger.DEBUG(string.Format("{0} : {1} ", "@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
+
+                param.Add(new MySqlParameter("@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
+            }
+
+
+            return param.ToArray();
+            //return parameter;
+        }
 
         /// <summary>
-        /// 환자정보 입력
+        /// Insert sql문 생성
         /// </summary>
-        /// <param name="acPntnInfo"></param>
-        public void InsertPntnInfo(List<AcPntnInfo> acPntnInfos)
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private string GenerateInsertSql<T>(T item)
         {
+            // --(SELECT LPAD(max(ptnt_id) + 1, 8, '0') as ptnt_id FROM t_ac_ptnt_info ALIAS_FOR_SUBQUERY) 
 
+            StringBuilder sbSql = new StringBuilder();
+            StringBuilder sbValues = new StringBuilder();
+            StringBuilder sbParams = new StringBuilder();
+
+
+            Type t = item.GetType();
+            PropertyInfo[] pi = t.GetProperties();
+
+            foreach (PropertyInfo p in pi)
+            {
+                sbValues.AppendFormat("{0} {1}", sbValues.Length >0 ? ",": "" , CommonStatic.ToUnderscoreCase(p.Name));
+                sbParams.AppendFormat("{0} @{1}", sbParams.Length > 0 ? "," : "", CommonStatic.ToUnderscoreCase(p.Name));
+            }
+
+            sbSql.AppendFormat("insert into t_{0}\n", CommonStatic.ToUnderscoreCase(item.GetType().Name));
+            sbSql.AppendLine("(");
+            sbSql.AppendLine(sbValues.ToString());
+            sbSql.AppendLine(") values");
+            sbSql.AppendLine("(");
+            sbSql.AppendLine(sbParams.ToString());
+            sbSql.AppendLine(")");
+
+            return sbSql.ToString();
+        }
+        #endregion
+
+        public void InsertInfo<T>(List<T> data)
+        {
+            string sql = "";
             using (TransactionScope scope = new TransactionScope())
             {
                 using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
                 {
-                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "InsertPntnInfo");
-                    foreach (AcPntnInfo item in acPntnInfos)
+                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, data[0].GetType().Name);
+
+                    //Generate Insert sql
+                    sql = GenerateInsertSql(data[0]);
+
+                    foreach (T item in data)
                     {
                         try
                         {
-                            factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
-                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS,  string.Format("success {0}", item.PtntId));
+                            //generate parameter datas and send sql
+                            factory.ExecuteNonQuery(sql, InsertParameter(item));
+
+                            //factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
+                            //WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS, string.Format("success {0}", item.PtntId));
                         }
                         catch (Exception ex)
                         {
                             //변환실패 목록 저장
-                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL,  string.Format("fail {0} : {1}", item.PtntId, ex.Message));
+                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("Error InsertInfo {0} ",  ex.Message));
                         }
-
-
-
-
                     }
                 }
 
                 scope.Complete();
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS, data[0].GetType().Name);
             }
-                
-            
-           
         }
 
-        /// <summary>
-        /// 환자정보 입력 쿼리생성
-        /// </summary>
-        /// <returns></returns>
-        private string InsertPntnInfoSql()
-        {
-            // --(SELECT LPAD(max(ptnt_id) + 1, 8, '0') as ptnt_id FROM t_ac_ptnt_info ALIAS_FOR_SUBQUERY) 
-            string strSql = @"
+
+        //#region 환자정보입력
+
+        ///// <summary>
+        ///// 환자정보 입력
+        ///// </summary>
+        ///// <param name="AcPtntInfo"></param>
+        //public void InsertPntnInfo(List<AcPtntInfo> AcPtntInfos)
+        //{
+
+        //    using (TransactionScope scope = new TransactionScope())
+        //    {
+        //        using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+        //        {
+        //            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "InsertPntnInfo");
+        //            foreach (AcPtntInfo item in AcPtntInfos)
+        //            {
+        //                try
+        //                {
+        //                    factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertParameter(item));  
+
+        //                    //factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
+        //                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS,  string.Format("success {0}", item.PtntId));
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    //변환실패 목록 저장
+        //                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL,  string.Format("fail {0} : {1}", item.PtntId, ex.Message));
+        //                }
+        //            }
+        //        }
+
+        //        scope.Complete();
+        //    }
+        //}
+
+        ///// <summary>
+        ///// 환자정보 입력 쿼리생성
+        ///// </summary>
+        ///// <returns></returns>
+        //private string InsertPntnInfoSql()
+        //{
+        //    // --(SELECT LPAD(max(ptnt_id) + 1, 8, '0') as ptnt_id FROM t_ac_ptnt_info ALIAS_FOR_SUBQUERY) 
+        //    string strSql = @"
                     
-                        insert into t_ac_ptnt_info
-                        (
-                            ptnt_id
-                            , hos_cd
-                            , ptnt_nm
-                        )values
-                        (
+        //                insert into t_ac_ptnt_info
+        //                (
+        //                    ptnt_id
+        //                    , hos_cd
+        //                    , ptnt_nm
+        //                )values
+        //                (
                            
-                             @ptnt_id
-                            , @hos_cd
-                            , @ptnt_nm
-                        )
-                ";
+        //                     @ptnt_id
+        //                    , @hos_cd
+        //                    , @ptnt_nm
+        //                )
+        //        ";
 
-            return strSql;
-        }
+        //    return strSql;
+        //}
 
-        /// <summary>
-        /// 환자정보 입력 파라미터 설정
-        /// </summary>
-        /// <param name="actPntnInfo"></param>
-        /// <returns></returns>
-        private MySqlParameter [] InsertPntnInfoParameter(AcPntnInfo actPntnInfo)
-        {
-            MySqlParameter[] parameter = new MySqlParameter[]
-            {
-                new MySqlParameter("@ptnt_id", actPntnInfo.PtntId)
-                , new MySqlParameter("@hos_cd", actPntnInfo.HosCd)
-                , new MySqlParameter("@ptnt_nm", actPntnInfo.PtntNm)
+        ///// <summary>
+        ///// 환자정보 입력 파라미터 설정
+        ///// </summary>
+        ///// <param name="actPntnInfo"></param>
+        ///// <returns></returns>
+        //private MySqlParameter [] InsertPntnInfoParameter(AcPtntInfo actPntnInfo)
+        //{
+        //    MySqlParameter[] parameter = new MySqlParameter[]
+        //    {
+        //        new MySqlParameter("@ptnt_id", actPntnInfo.PtntId)
+        //        , new MySqlParameter("@hos_cd", actPntnInfo.HosCd)
+        //        , new MySqlParameter("@ptnt_nm", actPntnInfo.PtntNm)
 
-            };
+        //    };
 
-            return parameter;
-        }
+        //    Type t = actPntnInfo.GetType();
+        //    PropertyInfo[] pi = t.GetProperties();
 
-        #endregion
+        //    foreach (PropertyInfo p in pi)
+        //    {
+                
+        //        Logger.Logger.DEBUG(string.Format("{0} : {1} ", p.Name, p.GetValue(actPntnInfo)));
+        //    }
+
+
+        //    List<MySqlParameter> param = new List<MySqlParameter>();
+        //    param.Add(new MySqlParameter("", actPntnInfo.PtntId));
+
+        //    parameter = param.ToArray();
+        //    return parameter;
+        //}
+
+        
+
+        //#endregion
 
         #region //Dispose
 
@@ -178,6 +288,11 @@ namespace MD_DataMigration.Service.MDPARK
         public void StartConvert(BaseInfo baseInfo)
         {
             this.baseInfo = baseInfo;
+        }
+
+        public List<string> ConvertTaretItems()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

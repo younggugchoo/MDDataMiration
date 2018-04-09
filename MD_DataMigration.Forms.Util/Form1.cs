@@ -16,7 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using static MD_DataMigration.Service.CommonStatic;
 
-namespace MD_DataMigration.Forms
+namespace MD_DataMigration.Forms.Util
 {
     public partial class Form1 : Form
     {
@@ -27,7 +27,7 @@ namespace MD_DataMigration.Forms
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -40,7 +40,7 @@ namespace MD_DataMigration.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-           
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace MD_DataMigration.Forms
                         return;
 
                     }
-          
+
                 }
             }
 
@@ -122,10 +122,10 @@ namespace MD_DataMigration.Forms
 
             //}
         }
-        
+
         private void button6_Click(object sender, EventArgs e)
         {
-            using(MDPARKService service = new MDPARKService("MariaDbMDPark"))
+            using (MDPARKService service = new MDPARKService("MariaDbMDPark"))
             {
                 StringBuilder sb = new StringBuilder();
 
@@ -148,8 +148,29 @@ namespace MD_DataMigration.Forms
             }
         }
 
-        
+        private void button7_Click(object sender, EventArgs e)
+        {
+            using (MDPARKService service = new MDPARKService("MariaDbMDPark"))
+            {
+                StringBuilder sb = new StringBuilder();
 
+                DataSet ds = service.CreateModelClass(txtTableName.Text);
 
+                string txt = "public {0} {1} {get; set;}";
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    sb.AppendLine("/// <summary>");
+                    sb.AppendLine("/// " + dr["column_comment"].ToString());
+                    sb.AppendLine("/// </summary>");
+                    sb.Append(string.Format("public {0} {1}", ConvertDataType(dr["data_type"].ToString()), ToPascalCase(dr["column_name"].ToString())));
+                    sb.AppendLine(" {get; set;}");
+                    sb.AppendLine();
+                    //Logger.Logger.DEBUG(dr["column_name"].ToString());
+                }
+
+                txtResult.Text = sb.ToString();
+
+            }
+        }
     }
 }

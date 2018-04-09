@@ -29,10 +29,11 @@ namespace MD_DataMigration.Service.BYEONGCOM
      
         }
 
-        private void MdParkService_WorkingInfo(string message)
+        private void MdParkService_WorkingInfo(CommonStatic.WORK_RESULT workResult, string message)
         {
-            
+            WorkingInfo?.Invoke(workResult, message);
         }
+
 
         public DbDataReader TestConnection()
         {
@@ -65,58 +66,41 @@ namespace MD_DataMigration.Service.BYEONGCOM
         {
            
             mdParkService = new MDPARKService(TARGET_DB);
-            mdParkService.WorkingInfo += MdParkService_WorkingInfo1;
+            mdParkService.WorkingInfo += MdParkService_WorkingInfo;
             mdParkService.StartConvert(baseInfo);
 
             this.baseInfo = baseInfo;
 
-            //try
-            //{
-                Logger.Logger.INFO("BYEONGCOMService StartConvert");
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "BYEONGCOMService StartConvert");
+            
+            Logger.Logger.INFO("BYEONGCOMService StartConvert");
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "BYEONGCOMService StartConvert");
 
-                //환자정보 변환
-                ConvertPntnInfo();
-
+            //환자정보 변환
+            ConvertPntnInfo();
 
 
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "BYEONGCOMService EndConvert");
-                Convert_Completed?.Invoke(this, new EventArgs());
-            //}
-            //catch (Exception ex)
-            //{                    
-            //    Logger.Logger.ERROR(ex.Message);
-            //    Logger.Logger.ERROR(ex.Source.ToString());
-            //    Convert_Completed?.Invoke(this, new EventArgs());
-            //    throw ex;
-            //}
+
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "BYEONGCOMService EndConvert");
+           
            
         }
 
-        private void MdParkService_WorkingInfo1(CommonStatic.WORK_RESULT workResult, string message)
-        {
-            WorkingInfo?.Invoke(workResult,  message);
-        }
+  
 
         /// <summary>
         /// 환자정보 변환
         /// </summary>
         private void ConvertPntnInfo()
         {
-            //try
-            //{
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "환자정보 변환시작");
-                List<AcPntnInfo> acPntnInfos = SelectPatientBaseInfo();
+        
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "환자정보 변환시작");
+            List<AcPtntInfo> AcPtntInfos = SelectPatientBaseInfo();
 
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  string.Format("변환대상 수:{0}", acPntnInfos.Count));
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  string.Format("변환대상 수:{0}", AcPtntInfos.Count));
 
-                mdParkService.InsertPntnInfo(acPntnInfos);
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "환자정보 변환종료");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Logger.Logger.DEBUG(ex.Message, ex);
-            //}
+            //mdParkService.InsertPntnInfo(AcPtntInfos);
+            mdParkService.InsertInfo(AcPtntInfos);
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE,  "환자정보 변환종료");
 
         }
 
@@ -128,12 +112,12 @@ namespace MD_DataMigration.Service.BYEONGCOM
         /// 환자 기본정보 조회
         /// </summary>
         /// <returns></returns>
-        private List<AcPntnInfo> SelectPatientBaseInfo()
+        private List<AcPtntInfo> SelectPatientBaseInfo()
         {
             using (Data.DatabaseFactory factory = new Data.DatabaseFactory())
             {
 
-                List<AcPntnInfo> lstAcPntnInfo = new List<AcPntnInfo>();
+                List<AcPtntInfo> lstAcPtntInfo = new List<AcPtntInfo>();
 
                 factory.DatabaseFactoryAccess("환자정보");
                 string strSql = @"SELECT TOP 100
@@ -198,18 +182,56 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 FROM 환자정보;";
                 DataSet ds = factory.ExcuteDatSet(strSql, CommandType.Text, null);
 
-                AcPntnInfo acPntnInfo = null;
+                AcPtntInfo AcPtntInfo = null;
                 foreach(DataRow dr in ds.Tables[0].Rows)
                 {
-                    acPntnInfo = new AcPntnInfo();
-                    acPntnInfo.PtntId = dr["챠트번호"].ToString();
-                    acPntnInfo.HosCd = baseInfo.HosCd;
-                    acPntnInfo.PtntNm = dr["수진자명"].ToString();
+                    AcPtntInfo = new AcPtntInfo();
+                    AcPtntInfo.HosCd = baseInfo.HosCd;
+                    AcPtntInfo.PtntId = dr["챠트번호"].ToString();                    
+                    AcPtntInfo.PtntNm = dr["수진자명"].ToString();
+                    //AcPtntInfo.ResRegNo1 = dr["주민등록"].ToString();
+                    //AcPtntInfo.ResRegNo2 = dr["주민등록"].ToString();
+                   // AcPtntInfo.BirthYmd = dr["생년월일"].ToString();
+                    AcPtntInfo.Sex = dr["남여구분"].ToString();
+                    
+                    AcPtntInfo.ZipNo = dr["우편번호"].ToString();
+                    AcPtntInfo.Addr = dr["주소1"].ToString();
+                    AcPtntInfo.Addr2 = dr["주소2"].ToString();
+                    AcPtntInfo.MobNo = dr["휴대폰번호"].ToString();
+                    AcPtntInfo.TelNo1 = dr["전화번호"].ToString();
+                    //AcPtntInfo.TelNm1 = dr[""].ToString();
+                    //AcPtntInfo.TelNo2 = dr[""].ToString();
+                    //AcPtntInfo.TelNm2 = dr[""].ToString();
+                    //AcPtntInfo.TelNo3 = dr[""].ToString();
+                    //AcPtntInfo.TelNm3 = dr[""].ToString();
+                    AcPtntInfo.IndvdlinfoAgreYn = dr["정보동의"].ToString();
+                    AcPtntInfo.ChdsesMngYn = dr["만성질환관리"].ToString();
+                    AcPtntInfo.PrgncYn = dr["임부구분"].ToString();
+                    AcPtntInfo.SmsRcveYn = dr["정보동의"].ToString();
+                    AcPtntInfo.Email = dr["전자메일"].ToString();
+                    //AcPtntInfo.AboTy = dr[""].ToString(); //혈액형 ABO
+                    //AcPtntInfo.Rh = dr[""].ToString();
+                    //AcPtntInfo.VipYn = dr[""].ToString();
+                    //AcPtntInfo.VipMemo = dr[""].ToString();
+                    //AcPtntInfo.OldPtntId = dr[""].ToString();
+                    //AcPtntInfo.AppUseYn = dr[""].ToString();
+                    //AcPtntInfo.AlrgMemo = dr[""].ToString();
+                    AcPtntInfo.Memo = dr["메모1"].ToString()  + "\n" + dr["메모2"].ToString();
+                    //AcPtntInfo.InsId = dr[""].ToString();
+                    AcPtntInfo.InsDt = dr["최초접수일"].ToString();
+                    //AcPtntInfo.PhotoYn = dr[""].ToString();
+                    AcPtntInfo.FilePath = dr["사진경로"].ToString();
+                    //AcPtntInfo.ServerFileNm = dr[""].ToString();
+                    //AcPtntInfo.AppUseDt = dr[""].ToString();
 
-                    lstAcPntnInfo.Add(acPntnInfo);
+
+
+
+
+                    lstAcPtntInfo.Add(AcPtntInfo);
                     
                 }
-                return lstAcPntnInfo;
+                return lstAcPtntInfo;
 
             }
         }

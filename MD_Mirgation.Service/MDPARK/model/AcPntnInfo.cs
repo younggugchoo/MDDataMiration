@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace MD_DataMigration.Service.MDPARK.model
     /// <summary>
     /// 환자기본정보
     /// </summary>
-    public class AcPntnInfo
+    public class AcPtntInfo
     {
         /// <summary>
         /// 환자ID
@@ -207,11 +208,12 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string ServerFileNm { get; set; }
 
         /// <summary>
-        /// 앱설치일시
+        /// 앱설치일시   
         /// </summary>
         public string AppUseDt { get; set; }
 
+        
 
-
+        
     }
 }
