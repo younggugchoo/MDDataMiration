@@ -15,6 +15,9 @@ using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using static MD_DataMigration.Service.CommonStatic;
+using System.Xml;
+using System.Reflection;
+using MD_DataMigration.Service.MDPARK.model;
 
 namespace MD_DataMigration.Forms.Util
 {
@@ -129,7 +132,7 @@ namespace MD_DataMigration.Forms.Util
             {
                 StringBuilder sb = new StringBuilder();
 
-                DataSet ds = service.CreateModelClass(txtTableName.Text);
+                DataSet ds = service.SelectColumnList(txtTableName.Text);
 
                 string txt = "public {0} {1} {get; set;}";
                 foreach (DataRow dr in ds.Tables[0].Rows)
@@ -152,23 +155,108 @@ namespace MD_DataMigration.Forms.Util
         {
             using (MDPARKService service = new MDPARKService("MariaDbMDPark"))
             {
+
+
+                StringBuilder sb = new StringBuilder();
+                DataSet tDs = service.SelectTableList();
+
+                foreach (DataRow tDr in tDs.Tables[0].Rows)
+                {
+                    string tableName = tDr["TABLE_NAME"].ToString();
+
+                   
+                    DirectoryInfo dir = new DirectoryInfo("\\Output");
+
+                    if (!dir.Exists) dir.Create();
+
+
+                    FileInfo f = new FileInfo(dir.FullName + "/" + ToPascalCase(tableName) + ".cs");
+
+                    if (f.Exists) f.Delete();
+
+                    FileStream fs = f.Create();
+                    //fs.Close();
+
+
+                    TextWriter tw = new StreamWriter(fs);
+                    
+                    DataSet ds = service.SelectColumnList(tableName);
+                    sb.Clear();
+                    sb.AppendLine("namespace MD_DataMigration.Service.MDPARK.model");
+                    sb.AppendLine("{");
+                    sb.AppendLine("\tpublic class " + ToPascalCase(tableName));
+                    sb.AppendLine("\t {");
+
+                    string txt = "public {0} {1} {get; set;}";
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        sb.AppendLine("\t\t/// <summary>");
+                        sb.AppendLine("\t\t/// " + dr["column_comment"].ToString());
+                        sb.AppendLine("\t\t/// </summary>");
+                        sb.Append(string.Format("\t\tpublic {0} {1}", ConvertDataType(dr["data_type"].ToString()), ToPascalCase(dr["column_name"].ToString())));
+                        sb.AppendLine(" {get; set;}");
+                        sb.AppendLine();
+                        //Logger.Logger.DEBUG(dr["column_name"].ToString());
+                    }
+
+                    //txtResult.Text = sb.ToString();
+                    sb.AppendLine("\t }");
+                    sb.AppendLine("}");
+                    tw.Write(sb.ToString());
+                    tw.Close();
+                    fs.Close();
+                }
+            }
+
+            MessageBox.Show("생성완료");
+        }
+
+        private void btnReadQuery_Click(object sender, EventArgs e)
+        {
+            //XmlDocument xmlDocument = new XmlDocument();
+
+            //xmlDocument.Load(Application.StartupPath + @"\sql\sql-byeongcom.xml");
+
+            ////doc.Load(Application.StartupPath +  @"\sql\sql-byeongcom.xml");
+
+
+            //var node = xmlDocument.SelectSingleNode("//*[@id='test.testquery']");
+
+            ////XmlElement el = doc.GetElementById("test.testquery");
+
+            //txtQuery.Text = node.InnerText;
+            string fileName = "sql-byeongcom.xml";
+
+            txtQuery.Text = ReadQuery.GetInstance(fileName).GetQueryText("환자정보.환자정보") ;
+        }
+
+        private void btnGenConvertCode_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string className = txtTableName.Text;
                 StringBuilder sb = new StringBuilder();
 
-                DataSet ds = service.CreateModelClass(txtTableName.Text);
+                TCmAuth at = new TCmAuth();
+                Type t = Type.GetType(string.Format("MD_DataMigration.Service.MDPARK.model.{0}, MD_DataMigration.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", className));
 
-                string txt = "public {0} {1} {get; set;}";
-                foreach (DataRow dr in ds.Tables[0].Rows)
+                PropertyInfo[] pi = t.GetProperties();
+
+                foreach (PropertyInfo p in pi)
                 {
-                    sb.AppendLine("/// <summary>");
-                    sb.AppendLine("/// " + dr["column_comment"].ToString());
-                    sb.AppendLine("/// </summary>");
-                    sb.Append(string.Format("public {0} {1}", ConvertDataType(dr["data_type"].ToString()), ToPascalCase(dr["column_name"].ToString())));
-                    sb.AppendLine(" {get; set;}");
-                    sb.AppendLine();
-                    //Logger.Logger.DEBUG(dr["column_name"].ToString());
+                    if (p.GetCustomAttribute(typeof(ColunmExceptionAttribute), true) == null)
+                    {
+                        sb.AppendLine(string.Format("_{0}.{1} = dr[\"\"].ToString();", Char.ToLowerInvariant(className[0]) + className.Substring(1), p.Name));
+
+
+                    }
+
                 }
 
                 txtResult.Text = sb.ToString();
+            }
+            catch
+            {
 
             }
         }

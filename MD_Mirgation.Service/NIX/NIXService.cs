@@ -44,7 +44,7 @@ namespace MD_DataMigration.Service.NIX
 
                 //DbDataReader dr = factory.ExecuteReader("select * from products;", CommandType.Text, null);
                 //DbDataReader dr = factory.ExecuteReader("select * from test.users;", CommandType.Text, null);
-                DataSet ds = factory.ExcuteDatSet("select * from users", CommandType.Text);
+                DataSet ds = factory.ExecuteDataSet("select * from users", CommandType.Text);
 
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
@@ -92,7 +92,7 @@ namespace MD_DataMigration.Service.NIX
                 //    }
                 //}
 
-                DataSet ds = factory.ExcuteDatSet("select top 10 * from T_MEM_M_IDV WHERE USE_F =@USE_F AND BL_CO_CD = @BL_CO_CD", CommandType.Text, parameter);
+                DataSet ds = factory.ExecuteDataSet("select top 10 * from T_MEM_M_IDV WHERE USE_F =@USE_F AND BL_CO_CD = @BL_CO_CD", CommandType.Text, parameter);
 
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {

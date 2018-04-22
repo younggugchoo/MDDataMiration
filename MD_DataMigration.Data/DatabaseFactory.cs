@@ -81,7 +81,12 @@ namespace MD_DataMigration.Data
             }
         }
 
-        public DataSet ExcuteDatSet(string commandText, CommandType commandType, params IDbDataParameter[] paramValues)
+        public DataSet ExecuteDataSet(string commandText)
+        {
+            return ExecuteDataSet(commandText, CommandType.Text, null);
+        }
+
+        public DataSet ExecuteDataSet(string commandText, CommandType commandType, params IDbDataParameter[] paramValues)
         {
             if (connection == null) throw new ArgumentException("connection");
             using (DbCommand dbCommand = CraeteCommand())

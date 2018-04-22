@@ -54,7 +54,7 @@ namespace MD_DataMigration.Service.MDPARK
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public DataSet CreateModelClass(string tableName)
+        public DataSet SelectColumnList(string tableName)
         {
             using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
             {
@@ -74,13 +74,30 @@ namespace MD_DataMigration.Service.MDPARK
 
                 };
 
-                DataSet ds = factory.ExcuteDatSet(sql, CommandType.Text, parameter);
+                DataSet ds = factory.ExecuteDataSet(sql, CommandType.Text, parameter);
 
 
                 return ds;
             }
             //return classFileText;
 
+        }
+
+        public DataSet SelectTableList()
+        {
+            using(Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+            {
+                string sql = @"select table_name
+                            from information_schema.TABLES
+                            where table_schema = 'mdemr'
+                                and TABLE_NAME like 't_%'
+                            order by table_name
+                            ";
+
+                DataSet ds = factory.ExecuteDataSet(sql);
+                return ds;
+                
+            }
         }
 
         /// <summary>
@@ -98,10 +115,13 @@ namespace MD_DataMigration.Service.MDPARK
 
             foreach (PropertyInfo p in pi)
             {
+                if (p.GetCustomAttribute(typeof(ColunmExceptionAttribute), true) == null)
+                {
+                    Logger.Logger.DEBUG(string.Format("{0} : {1} ", "@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
 
-                Logger.Logger.DEBUG(string.Format("{0} : {1} ", "@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
-
-                param.Add(new MySqlParameter("@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
+                    param.Add(new MySqlParameter("@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
+                } 
+                
             }
 
 
@@ -129,11 +149,15 @@ namespace MD_DataMigration.Service.MDPARK
 
             foreach (PropertyInfo p in pi)
             {
-                sbValues.AppendFormat("{0} {1}", sbValues.Length >0 ? ",": "" , CommonStatic.ToUnderscoreCase(p.Name));
-                sbParams.AppendFormat("{0} @{1}", sbParams.Length > 0 ? "," : "", CommonStatic.ToUnderscoreCase(p.Name));
+                if (p.GetCustomAttribute(typeof(ColunmExceptionAttribute), true) == null)
+                {
+
+                    sbValues.AppendFormat("{0} {1}", sbValues.Length > 0 ? "," : "", CommonStatic.ToUnderscoreCase(p.Name));
+                    sbParams.AppendFormat("{0} @{1}", sbParams.Length > 0 ? "," : "", CommonStatic.ToUnderscoreCase(p.Name));
+                }
             }
 
-            sbSql.AppendFormat("insert into t_{0}\n", CommonStatic.ToUnderscoreCase(item.GetType().Name));
+            sbSql.AppendFormat("insert into {0}\n", CommonStatic.ToUnderscoreCase(item.GetType().Name));
             sbSql.AppendLine("(");
             sbSql.AppendLine(sbValues.ToString());
             sbSql.AppendLine(") values");
@@ -148,6 +172,7 @@ namespace MD_DataMigration.Service.MDPARK
         public void InsertInfo<T>(List<T> data)
         {
             string sql = "";
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, string.Format("변환대상 수:{0}", data.Count));
             using (TransactionScope scope = new TransactionScope())
             {
                 using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
@@ -289,6 +314,8 @@ namespace MD_DataMigration.Service.MDPARK
         {
             this.baseInfo = baseInfo;
         }
+
+        public BaseInfo GetBaseInfo { get { return this.baseInfo; } }
 
         public List<string> ConvertTaretItems()
         {

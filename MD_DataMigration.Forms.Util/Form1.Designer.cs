@@ -38,6 +38,10 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
+            this.txtQuery = new System.Windows.Forms.TextBox();
+            this.btnReadQuery = new System.Windows.Forms.Button();
+            this.txtQueryId = new System.Windows.Forms.TextBox();
+            this.btnGenConvertCode = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,7 +65,7 @@
             // 
             this.button6.Location = new System.Drawing.Point(184, 315);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(198, 37);
+            this.button6.Size = new System.Drawing.Size(159, 37);
             this.button6.TabIndex = 15;
             this.button6.Text = "MDPark 테이블 생성";
             this.button6.UseVisualStyleBackColor = true;
@@ -126,22 +130,62 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(417, 315);
+            this.button7.Location = new System.Drawing.Point(184, 273);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(219, 36);
+            this.button7.Size = new System.Drawing.Size(238, 36);
             this.button7.TabIndex = 18;
             this.button7.Text = "클래스 파일생성(전체테이블)";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
+            // txtQuery
+            // 
+            this.txtQuery.Location = new System.Drawing.Point(664, 370);
+            this.txtQuery.Multiline = true;
+            this.txtQuery.Name = "txtQuery";
+            this.txtQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtQuery.Size = new System.Drawing.Size(570, 320);
+            this.txtQuery.TabIndex = 17;
+            // 
+            // btnReadQuery
+            // 
+            this.btnReadQuery.Location = new System.Drawing.Point(842, 315);
+            this.btnReadQuery.Name = "btnReadQuery";
+            this.btnReadQuery.Size = new System.Drawing.Size(159, 37);
+            this.btnReadQuery.TabIndex = 15;
+            this.btnReadQuery.Text = "xml쿼리 읽어오기";
+            this.btnReadQuery.UseVisualStyleBackColor = true;
+            this.btnReadQuery.Click += new System.EventHandler(this.btnReadQuery_Click);
+            // 
+            // txtQueryId
+            // 
+            this.txtQueryId.Location = new System.Drawing.Point(670, 324);
+            this.txtQueryId.Name = "txtQueryId";
+            this.txtQueryId.Size = new System.Drawing.Size(165, 22);
+            this.txtQueryId.TabIndex = 16;
+            // 
+            // btnGenConvertCode
+            // 
+            this.btnGenConvertCode.Location = new System.Drawing.Point(349, 316);
+            this.btnGenConvertCode.Name = "btnGenConvertCode";
+            this.btnGenConvertCode.Size = new System.Drawing.Size(144, 36);
+            this.btnGenConvertCode.TabIndex = 19;
+            this.btnGenConvertCode.Text = "컨버트 코드생성";
+            this.btnGenConvertCode.UseVisualStyleBackColor = true;
+            this.btnGenConvertCode.Click += new System.EventHandler(this.btnGenConvertCode_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1027, 750);
+            this.ClientSize = new System.Drawing.Size(1306, 791);
+            this.Controls.Add(this.btnGenConvertCode);
             this.Controls.Add(this.button7);
+            this.Controls.Add(this.txtQuery);
             this.Controls.Add(this.txtResult);
+            this.Controls.Add(this.txtQueryId);
             this.Controls.Add(this.txtTableName);
+            this.Controls.Add(this.btnReadQuery);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.button5);
@@ -170,6 +214,10 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.TextBox txtQuery;
+        private System.Windows.Forms.Button btnReadQuery;
+        private System.Windows.Forms.TextBox txtQueryId;
+        private System.Windows.Forms.Button btnGenConvertCode;
     }
 }
 

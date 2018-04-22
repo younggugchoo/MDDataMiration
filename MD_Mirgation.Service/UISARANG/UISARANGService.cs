@@ -29,7 +29,7 @@ namespace MD_DataMigration.Service.UISARANG
                 //    }   
                 //}
 
-                DataSet ds = factory.ExcuteDatSet("SELECT TOP 10 * FROM SMPSUGA", CommandType.Text);
+                DataSet ds = factory.ExecuteDataSet("SELECT TOP 10 * FROM SMPSUGA", CommandType.Text);
 
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {

@@ -129,7 +129,7 @@ namespace MD_DataMigration.Forms
             {
                 StringBuilder sb = new StringBuilder();
 
-                DataSet ds = service.CreateModelClass(txtTableName.Text);
+                DataSet ds = service.SelectColumnList(txtTableName.Text);
 
                 string txt = "public {0} {1} {get; set;}";
                 foreach (DataRow dr in ds.Tables[0].Rows)

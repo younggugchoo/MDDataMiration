@@ -30,7 +30,7 @@ namespace MD_DataMigration.Service
                 case "int":
                     return "int";
                 default:
-                    return "";
+                    return "string";
             }
         }
 
