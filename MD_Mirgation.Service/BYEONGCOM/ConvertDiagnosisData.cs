@@ -29,13 +29,13 @@ namespace MD_DataMigration.Service.BYEONGCOM
             ConvertTAcPtntInfo("환자정보", "환자정보");
 
             //자보보험 이력
-            ConvertTAcPtntInfo("환자정보", "자보보험");
+            ConvertTAcCarInsuHist("환자정보", "자보보험");
 
             //산재보험 이력
             ConvertTAcInsuHist("환자정보", "산재보험");
 
             //보험이력(보험정보)
-
+            ConvertTAcInlcInsuHist("환자정보", "보험정보");
             //입원정보
 
             //진료색인(진료데이터)
@@ -81,10 +81,12 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //환자의 과거력
         }
 
+
+
         #region //진료데이터 변환
 
 
-
+        #region //환자정보
         /// <summary>
         /// 환자정보 변환
         /// </summary>
@@ -207,12 +209,31 @@ namespace MD_DataMigration.Service.BYEONGCOM
         }
 
 
+        /// <summary>
+        /// 산재정보
+        /// </summary>
+        /// <param name="tDbFileName"></param>
+        /// <param name="tableName"></param>
         private void ConvertTAcInsuHist(string tDbFileName, string tableName)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 보험정보
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        private void ConvertTAcInlcInsuHist(string tDbFileName, string tableName)
+        {
+            throw new NotImplementedException();
+        }
 
+        #endregion //환자정보
+
+        #region //진료요약
+        
+        #endregion
 
 
         #endregion

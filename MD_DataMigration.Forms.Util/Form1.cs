@@ -18,6 +18,9 @@ using static MD_DataMigration.Service.CommonStatic;
 using System.Xml;
 using System.Reflection;
 using MD_DataMigration.Service.MDPARK.model;
+using System.Runtime.InteropServices;
+using Excel = Microsoft.Office.Interop.Excel;
+
 
 namespace MD_DataMigration.Forms.Util
 {
@@ -259,6 +262,115 @@ namespace MD_DataMigration.Forms.Util
             {
 
             }
+        }
+
+
+        object missing = Type.Missing;
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkBook= null;
+            Excel._Worksheet ExcelWorkSheet = null;
+
+
+            try
+            {
+
+                UISARANGService uISARANGService = new UISARANGService();
+                DataSet dsTable = uISARANGService.RetrieveTables();
+
+
+
+                if (xlApp == null)
+                {
+                    MessageBox.Show("Excel is not properly installed!!");
+                    return;
+                }
+
+
+
+                Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
+                object misValue = System.Reflection.Missing.Value;
+
+
+                xlWorkBook = xlApp.Workbooks.Add(misValue);
+
+
+                xlWorkBook.Worksheets.Add();
+
+                ExcelWorkSheet = (Excel._Worksheet)xlWorkBook.Worksheets[1];
+                ExcelWorkSheet.Name = "테이블 목록";
+
+
+                for (int i = 1; i < dsTable.Tables[0].Rows.Count; i++)
+                {
+                    ExcelWorkSheet.Cells[1, 1] = "테이블명";
+                    ExcelWorkSheet.Cells[1, 2] = "설명";
+
+                    ExcelWorkSheet.Cells[i + 1, 1] = dsTable.Tables[0].Rows[i-1]["TABLE_NAME"].ToString();
+
+                }
+
+                for (int i = 1; i < dsTable.Tables[0].Rows.Count; i++)
+                {
+                    xlWorkBook.Worksheets.Add(); //Adding New sheet in Excel Workbook
+                }
+
+
+
+                for (int i = 0; i < dsTable.Tables[0].Rows.Count; i++)
+
+                {
+                    int r = 1; // Initialize Excel Row Start Position  = 1
+
+
+
+                    ExcelWorkSheet = (Excel._Worksheet)xlWorkBook.Worksheets[i + 2];
+
+                    ExcelWorkSheet.Name = dsTable.Tables[0].Rows[i]["TABLE_NAME"].ToString();
+
+                    DataSet dsCol = uISARANGService.RetrieveColumns(dsTable.Tables[0].Rows[i]["TABLE_ID"].ToString());
+
+
+                    for (int j = 0; j < dsCol.Tables[0].Rows.Count; j++)
+                    {
+
+                        ExcelWorkSheet.Cells[1, 1] = "컬럼명";
+                        ExcelWorkSheet.Cells[1, 2] = "설명";
+
+                        ExcelWorkSheet.Cells[j + 2, 1] = dsCol.Tables[0].Rows[j]["COLUMN_NAME"].ToString();
+                        ExcelWorkSheet.Cells[j + 2, 2] = dsCol.Tables[0].Rows[j]["DESCRIPTION"].ToString();
+                    }
+
+                }
+
+
+                xlWorkBook.SaveAs("d:\\csharp-Excel.xls", Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlWorkBook.Close(true, misValue, misValue);
+                xlApp.Quit();
+
+                MessageBox.Show("Excel file created , you can find the file d:\\csharp-Excel.xls");
+
+                xlApp.Visible=true;
+
+
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(ExcelWorkSheet);
+                Marshal.ReleaseComObject(xlWorkBook);
+                Marshal.ReleaseComObject(xlApp);
+
+            }
+
+            
         }
     }
 }

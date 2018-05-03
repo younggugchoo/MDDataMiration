@@ -38,5 +38,31 @@ namespace MD_DataMigration.Service.UISARANG
 
             }
         }
+
+        public DataSet RetrieveTables()
+        {
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory("syBaseAnywhere"))
+            {
+               
+                DataSet ds = factory.ExecuteDataSet("SELECT top 10 TABLE_NAME, COUNT, TABLE_ID FROM SYSTABLE WHERE COUNT > 0 ORDER BY TABLE_NAME", CommandType.Text);
+
+                return ds;
+
+            }
+        }
+
+        public DataSet RetrieveColumns(string tableId)
+        {
+
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory("syBaseAnywhere"))
+            {
+
+                DataSet ds = factory.ExecuteDataSet( string.Format("SELECT COLUMN_NAME, '' DESCRIPTION FROM SYSCOLUMN WHERE table_id = {0}", tableId), CommandType.Text);
+
+                return ds;
+
+            }
+            
+        }
     }
 }

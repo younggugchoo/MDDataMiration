@@ -42,6 +42,7 @@
             this.btnReadQuery = new System.Windows.Forms.Button();
             this.txtQueryId = new System.Windows.Forms.TextBox();
             this.btnGenConvertCode = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -73,7 +74,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(306, 66);
+            this.pictureBox1.Location = new System.Drawing.Point(745, 63);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(167, 162);
             this.pictureBox1.TabIndex = 14;
@@ -174,11 +175,22 @@
             this.btnGenConvertCode.UseVisualStyleBackColor = true;
             this.btnGenConvertCode.Click += new System.EventHandler(this.btnGenConvertCode_Click);
             // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(331, 130);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(231, 35);
+            this.button8.TabIndex = 20;
+            this.button8.Text = "의사랑 테이블 정의서 생성";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1306, 791);
+            this.Controls.Add(this.button8);
             this.Controls.Add(this.btnGenConvertCode);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.txtQuery);
@@ -218,6 +230,7 @@
         private System.Windows.Forms.Button btnReadQuery;
         private System.Windows.Forms.TextBox txtQueryId;
         private System.Windows.Forms.Button btnGenConvertCode;
+        private System.Windows.Forms.Button button8;
     }
 }
 

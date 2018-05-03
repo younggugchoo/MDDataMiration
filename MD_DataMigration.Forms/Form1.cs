@@ -47,6 +47,8 @@ namespace MD_DataMigration.Forms
         {
             UISARANGService uISARANGService = new UISARANGService();
             uISARANGService.TestConnection();
+
+            DataSet ds = uISARANGService.RetrieveTables();
         }
 
         private void button4_Click(object sender, EventArgs e)
