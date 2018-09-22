@@ -3,54 +3,64 @@ namespace MD_DataMigration.Service.MDPARK.model
 	public class TMdConPtnt
 	 {
 		/// <summary>
-		/// 병원코드
+		/// Primary Key(Auto Increment)
 		/// </summary>
-		public string HosCd {get; set;}
+		public int DctConId {get; set;}
 
 		/// <summary>
-		/// 분류코드
-		/// </summary>
-		public string ConDivCd {get; set;}
-
-		/// <summary>
-		/// 의사_ID
+		/// 사용자 id
 		/// </summary>
 		public string UserId {get; set;}
 
 		/// <summary>
-		/// 환자ID
+		/// 
 		/// </summary>
-		public string PtntId {get; set;}
+		public int ConId {get; set;}
 
 		/// <summary>
-		/// 관심환자등록일시
+		/// 환자 id
 		/// </summary>
-		public string ConSdt {get; set;}
+		public int PtntId {get; set;}
 
 		/// <summary>
-		/// 관심환자종료일시
+		/// 특이 사항
 		/// </summary>
-		public string ConEdt {get; set;}
+		public string Remark {get; set;}
 
 		/// <summary>
-		/// 등록자ID
+		/// 사용 여부(Y/N)
+		/// </summary>
+		public string UseYn {get; set;}
+
+		/// <summary>
+		/// data 생성자 id
 		/// </summary>
 		public string InsId {get; set;}
 
 		/// <summary>
-		/// 등록일시
+		/// data 생성일시
 		/// </summary>
 		public string InsDt {get; set;}
 
 		/// <summary>
-		/// 수정자ID
+		/// data 생성자 ip
+		/// </summary>
+		public string InsIp {get; set;}
+
+		/// <summary>
+		/// data 수정자 id
 		/// </summary>
 		public string UpdId {get; set;}
 
 		/// <summary>
-		/// 수정일시
+		/// data 수정일시
 		/// </summary>
 		public string UpdDt {get; set;}
+
+		/// <summary>
+		/// data 수정자 ip
+		/// </summary>
+		public string UpdIp {get; set;}
 
 	 }
 }

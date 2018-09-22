@@ -21,6 +21,14 @@ namespace MD_DataMigration.Service.MDPARK
         public event LogEventHandler WorkingInfo;
         public event EventHandler Convert_Completed;
 
+      
+
+        //변환된 환자목록
+        public List<TAcPtnt> convertedTAcPtntInfos = null;
+
+        //변환된 접수데이터
+        public List<TMnRcv> convertedTMnRcvInfos = null;
+
         public MDPARKService(string value)
         {
             
@@ -64,7 +72,7 @@ namespace MD_DataMigration.Service.MDPARK
                     , data_type
                     , column_comment
                  from INFORMATION_SCHEMA.columns
-                where table_schema = 'mdemr'
+                where table_schema = 'emrtest'
                     and table_name = @tableName
                  order by ordinal_position; ";
 
@@ -89,7 +97,7 @@ namespace MD_DataMigration.Service.MDPARK
             {
                 string sql = @"select table_name
                             from information_schema.TABLES
-                            where table_schema = 'mdemr'
+                            where table_schema = 'emrtest'
                                 and TABLE_NAME like 't_%'
                             order by table_name
                             ";
@@ -119,7 +127,8 @@ namespace MD_DataMigration.Service.MDPARK
                 {
                     Logger.Logger.DEBUG(string.Format("{0} : {1} ", "@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
 
-                    param.Add(new MySqlParameter("@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj)));
+                    
+                    param.Add(new MySqlParameter("@" + CommonStatic.ToUnderscoreCase(p.Name), p.GetValue(obj) ));
                 } 
                 
             }
@@ -129,6 +138,8 @@ namespace MD_DataMigration.Service.MDPARK
             //return parameter;
         }
 
+
+      
         /// <summary>
         /// Insert sql문 생성
         /// </summary>
@@ -169,41 +180,225 @@ namespace MD_DataMigration.Service.MDPARK
         }
         #endregion
 
-        public void InsertInfo<T>(List<T> data)
+        public void ExecuteInsertData<T>(List<T> data)
         {
             string sql = "";
+
+
             WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, string.Format("변환대상 수:{0}", data.Count));
-            using (TransactionScope scope = new TransactionScope())
+            Logger.Logger.INFO(string.Format("변환대상 수:{0}", data.Count));
+
+            
+            int cnt = 0;
+            if (data.Count == 0) return;
+
+
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.CURRENT_WORK, data[0].GetType().Name);
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.TARGET_COUNT, data.Count.ToString());
+
+
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
             {
-                using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, data[0].GetType().Name);
+
+                //Generate Insert sql
+                sql = GenerateInsertSql(data[0]);
+
+                foreach (T item in data)
                 {
-                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, data[0].GetType().Name);
-
-                    //Generate Insert sql
-                    sql = GenerateInsertSql(data[0]);
-
-                    foreach (T item in data)
+                    try
                     {
-                        try
-                        {
-                            //generate parameter datas and send sql
-                            factory.ExecuteNonQuery(sql, InsertParameter(item));
+                        //generate parameter datas and send sql
+                        factory.ExecuteNonQuery(sql, InsertParameter(item));
 
-                            //factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
-                            //WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS, string.Format("success {0}", item.PtntId));
-                        }
-                        catch (Exception ex)
+                        //Logger.Logger.INFO(item.ToString());
+                        //factory.ExecuteNonQuery(InsertPntnInfoSql(), InsertPntnInfoParameter(item));
+                        //WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS, string.Format("success {0}", item.PtntId));
+
+                        cnt++;
+                        if (cnt % 100 == 0)
                         {
-                            //변환실패 목록 저장
-                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("Error InsertInfo {0} ",  ex.Message));
+                            Logger.Logger.INFO(string.Format("{0}개 행 적용됨.", cnt));
+                            
                         }
+                        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.CURRENT_COUNT, cnt.ToString());
+
+                    }
+                    catch (Exception ex)
+                    {
+                        //변환실패 목록 저장
+                        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("Error InsertInfo {0} ", ex.Message));
+                        Logger.Logger.INFO(ex.Message);
                     }
                 }
-
-                scope.Complete();
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS, data[0].GetType().Name);
             }
+
+            //scope.Complete();
+            Logger.Logger.INFO(string.Format("{0}개 행 적용됨.", cnt));
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.SUCCESS, data[0].GetType().Name);
+
         }
+
+        #region 병컴 데이터 변환 관련 함수
+
+        /// <summary>
+        /// 병컴데이터에서 이관된 환자의 Ptnt_id 조회
+        /// </summary>
+        /// <param name="hosCd"></param>
+        /// <param name="chartNum"></param>
+        /// <returns></returns>
+        public int retrievePtntIdFromByeongcom(string chartNum)
+        {
+            int ptntId = 0;
+
+            string sql = "";
+
+            sql = string.Format("SELECT ptnt_id" +
+                " FROM t_ac_ptnt" +
+                " WHERE hos_cd='{0}' " +
+                "   AND ptnt_cd='{1}'", GetBaseInfo.HosCd, chartNum);
+
+
+
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+            {
+                DataSet ds = factory.ExecuteDataSet(sql);
+
+                if (ds != null)
+                {
+
+                    if (ds.Tables[0].Rows.Count > 0) {
+                        if (ds.Tables[0].Rows.Count > 1) throw new DuplicateNameException();
+
+
+                        ptntId = Convert.ToInt32(ds.Tables[0].Rows[0]["ptnt_id"]);
+                    }
+                }
+            }
+
+            return ptntId;
+        }
+
+        /// <summary>
+        /// 환자ID 조회 (MDPark ID)
+        /// </summary>
+        /// <param name="hosCd"></param>
+        /// <returns></returns>
+        public List<TAcPtnt> retrievePtntList()
+        {
+            int ptntId = 0;
+
+            string sql = "";
+
+            sql = string.Format(
+                "SELECT " +
+                "   ptnt_id, ptnt_cd, hos_cd, ptnt_nm" +
+                " FROM t_ac_ptnt" +
+                " WHERE hos_cd='{0}' ", GetBaseInfo.HosCd);
+
+
+            List<TAcPtnt> acPtntInfos = null;
+
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+            {
+                DataTable dt = factory.ExecuteDataSet(sql).Tables[0];
+
+                convertedTAcPtntInfos = dt.DataTableToList<TAcPtnt>();
+            }
+
+            return acPtntInfos;
+        }
+
+        public int GetPtntIdMdPark(string chartNum)
+        {
+
+            //return retrievePtntIdFromByeongcom(chartNum);
+
+            
+            int ptntId = 0;
+
+            if (convertedTAcPtntInfos == null)
+            {
+                retrievePtntList();
+            }
+            TAcPtnt acPtnt = convertedTAcPtntInfos.Where(x => x.PtntCd == chartNum).DefaultIfEmpty().First();
+            
+
+
+            return acPtnt == null ? 0 : acPtnt.PtntId;
+        }
+
+
+        /// <summary>
+        /// 접수번호 조회
+        /// </summary>
+        /// <param name="ptntId">mdPark의 변환된 ID</param>
+        /// <param name="rcvDt">접수일자</param>
+        /// <returns></returns>
+        public int GetRcvId(int ptntId, string rcvDt)
+        {
+            
+            string sql = "";
+
+            int rcvId = 0;
+
+            sql = string.Format(
+                "SELECT " +
+                "   rcv_id, ptnt_id, rcv_dt" +
+                " FROM t_mn_rcv" +
+                " WHERE hos_cd='{0}' AND ptnt_id = {1} AND DATE_FORMAT(rcv_dt,'%Y-%m-%d') = '{2}' ", GetBaseInfo.HosCd, ptntId,  rcvDt);
+
+
+
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+            {
+                DataTable dt = factory.ExecuteDataSet(sql).Tables[0];
+
+                if (dt != null)
+                {
+                    if (dt.Rows.Count > 0)
+                    {
+                        if (dt.Rows.Count > 1) throw new DuplicateNameException();
+                        rcvId = Convert.ToInt32(dt.Rows[0]["rcv_id"]);
+                    }
+                
+                }
+            }
+
+            return rcvId;
+            
+            /*
+            string sql = "";
+            if (convertedTMnRcvInfos == null)
+            {
+
+
+                sql = string.Format(
+                    "SELECT " +
+                    "   rcv_id, ptnt_id, rcv_dt" +
+                    " FROM t_mn_rcv" +
+                    " WHERE hos_cd='{0}' ", GetBaseInfo.HosCd);
+
+
+
+                using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+                {
+                    DataTable dt = factory.ExecuteDataSet(sql).Tables[0];
+
+                    convertedTMnRcvInfos = dt.DataTableToList<TMnRcv>();
+                }
+
+            }
+            TMnRcv mnRcv = convertedTMnRcvInfos.Where(x => x.PtntId == ptntId && x.RcvDt == rcvDt).DefaultIfEmpty().First();
+
+            return mnRcv == null ? 0 : mnRcv.RcvId;
+            */
+            
+        }
+
+
+
+        #endregion 병컴 데이터 변환 관련 함수
 
 
         //#region 환자정보입력
@@ -249,7 +444,7 @@ namespace MD_DataMigration.Service.MDPARK
         //{
         //    // --(SELECT LPAD(max(ptnt_id) + 1, 8, '0') as ptnt_id FROM t_ac_ptnt_info ALIAS_FOR_SUBQUERY) 
         //    string strSql = @"
-                    
+
         //                insert into t_ac_ptnt_info
         //                (
         //                    ptnt_id
@@ -257,7 +452,7 @@ namespace MD_DataMigration.Service.MDPARK
         //                    , ptnt_nm
         //                )values
         //                (
-                           
+
         //                     @ptnt_id
         //                    , @hos_cd
         //                    , @ptnt_nm
@@ -287,7 +482,7 @@ namespace MD_DataMigration.Service.MDPARK
 
         //    foreach (PropertyInfo p in pi)
         //    {
-                
+
         //        Logger.Logger.DEBUG(string.Format("{0} : {1} ", p.Name, p.GetValue(actPntnInfo)));
         //    }
 
@@ -299,7 +494,7 @@ namespace MD_DataMigration.Service.MDPARK
         //    return parameter;
         //}
 
-        
+
 
         //#endregion
 

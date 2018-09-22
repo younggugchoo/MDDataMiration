@@ -32,6 +32,11 @@ namespace MD_DataMigration.Data
             Logger.Logger.INFO(string.Format("open database:{0}", connection.Database));
         }
 
+        public DbConnection GetConnection()
+        {
+            return connection;
+        }
+
         public void DatabaseFactoryAccess(string databaseFileName)
         {
             
@@ -49,7 +54,25 @@ namespace MD_DataMigration.Data
             connection = conn;
         }
 
-      
+        public void DatabaseFactoryAccess(string databaseFileName, string prefixName)
+        {
+
+
+            string rootPath = ConfigurationManager.AppSettings.Get("byengcomRootPath");
+            string path = rootPath + "\\" + ConfigurationManager.AppSettings.Get(ConfigurationManager.AppSettings.Get(prefixName)) + "\\" + databaseFileName + ".mdb";
+            string connStr = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";User Id=admin;";
+
+            OleDbConnection conn = new OleDbConnection();
+            conn.ConnectionString = connStr;
+            conn.Open();
+
+            Logger.Logger.INFO(path);
+
+            connection = conn;
+        }
+
+
+
 
         public DbCommand CraeteCommand()
         {
@@ -140,8 +163,8 @@ namespace MD_DataMigration.Data
             }
             
         }
-        
-        public int ExecuteNonQuery(string commandText, params IDbDataParameter[] paramValues)
+            
+        public int ExecuteNonQuery(string commandText, params   IDbDataParameter[] paramValues)
         {
             if (connection == null) throw new ArgumentException("connection");
             using (DbCommand dbCommand = CraeteCommand())
@@ -152,11 +175,15 @@ namespace MD_DataMigration.Data
                     dbCommand.CommandType = System.Data.CommandType.Text;
                     dbCommand.CommandText = commandText;
 
+                    
                     dbCommand.Prepare();
                     if (paramValues != null) AttachParameters(dbCommand, paramValues);
                     LoggingSqlStatement(dbCommand, paramValues);
 
-                    return dbCommand.ExecuteNonQuery();
+
+                    ret =  dbCommand.ExecuteNonQuery();
+
+                    return ret;
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +193,36 @@ namespace MD_DataMigration.Data
                 }
                 
             }
+        }
 
+        public int ExecuteNonQuery(MySqlConnection conn, string commandText, params IDbDataParameter[] paramValues)
+        {
+            using (DbCommand dbCommand = conn.CreateCommand())
+            {
+                int ret = 0;
+                try
+                {
+                    dbCommand.CommandType = System.Data.CommandType.Text;
+                    dbCommand.CommandText = commandText;
+
+
+                    dbCommand.Prepare();
+                    if (paramValues != null) AttachParameters(dbCommand, paramValues);
+                    LoggingSqlStatement(dbCommand, paramValues);
+
+
+                    ret = dbCommand.ExecuteNonQuery();
+
+                    return ret;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Logger.DEBUG(ex.Message, ex);
+                    throw ex;
+                    return 0;
+                }
+
+            }
         }
 
         private void LoggingSqlStatement(DbCommand dbCommand, params IDbDataParameter[] paramValues)

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MD_DataMigration.Service;
 using MD_DataMigration.Service.BYEONGCOM;
+using System.Runtime.InteropServices;
 
 
 namespace MD_DataMigration.Forms
@@ -19,6 +20,12 @@ namespace MD_DataMigration.Forms
     {
         private int sourceSystem;
         private int curTabPage;
+
+        private string currentWork;
+        private decimal targetCount;
+        private decimal currentCount;
+
+        Thread th;
 
         #region FormInit
         public frmConvert()
@@ -36,7 +43,11 @@ namespace MD_DataMigration.Forms
             curTabPage = 0;
             btnPrev.Enabled = false;
 
+            SetHeight(lstWorkList, 20);
+            SettingLstWorkList();
+            
 
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -72,6 +83,8 @@ namespace MD_DataMigration.Forms
 
                 convert.StartConvert(baseInfo);
             }
+
+
             
         }
 
@@ -156,9 +169,44 @@ namespace MD_DataMigration.Forms
                     case CommonStatic.WORK_RESULT.FAIL:
                         lstFailList.Items.Add(message);
                         break;
+
+                    case CommonStatic.WORK_RESULT.CURRENT_WORK:
+                        currentWork = message;
+                        break;
+                    case CommonStatic.WORK_RESULT.TARGET_COUNT:
+                        targetCount = Convert.ToInt32(message);
+                        break;
+                    case CommonStatic.WORK_RESULT.CURRENT_COUNT:
+                        currentCount = Convert.ToInt32(message);
+                        RefreshProgressRatio();
+
+
+                        break;
+
+                    
                 }
                 
             }));
+        }
+
+        private void RefreshProgressRatio()
+        {
+            this.Invoke(new MethodInvoker(
+           delegate ()
+           {
+               
+               foreach(ListViewItem item in lstWorkList.Items)
+               {
+                   if (item.Tag.ToString().Equals(currentWork))
+                   {
+                       
+                       item.SubItems[2].Text = string.Format("{0}%",Convert.ToInt32((currentCount / targetCount) * 100));
+                       break;
+                   }
+               }
+               
+                
+           }));
         }
 
         private void Convert_Completed(object sender, EventArgs e)
@@ -188,8 +236,23 @@ namespace MD_DataMigration.Forms
 
             if (MessageBox.Show("데이터 변환을 시작합니다. 계속 진행하시겠습니까?", "확인", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                Thread th = new Thread(new ThreadStart(StartConvert));
+                th = new Thread(new ThreadStart(StartConvert));
                 th.Start();
+
+                //Thread.Sleep(1000);
+                //while (!th.IsAlive) ;
+
+
+
+                //th.Join();
+
+            }
+            else
+            {
+                btnConvert.Enabled = true;
+                btnClose.Enabled = true;
+                btnPrev.Enabled = true;
+                btnNext.Enabled = false;
             }
 
 
@@ -211,6 +274,7 @@ namespace MD_DataMigration.Forms
                         break;
                 }
             }
+            btnNext.Enabled = true;
         }
 
         private void btnNext_Click(object sender, EventArgs e)
@@ -261,8 +325,59 @@ namespace MD_DataMigration.Forms
             ExportFileFailResult();
         }
 
+
         #endregion
 
+        private void SetHeight(ListView LV, int height)
+        {
+            // listView 높이 지정
+            ImageList imgList = new ImageList();
+            imgList.ImageSize = new Size(1, height);
+            LV.SmallImageList = imgList;
+        }
 
+        private void SettingLstWorkList()
+        {
+            ListViewItem item = new ListViewItem();
+
+            item.SubItems.Add("환자정보");
+            item.SubItems.Add("");
+            item.Checked = true;
+            item.Tag = "TAcPtnt";
+            lstWorkList.Items.Add(item);
+
+            item = new ListViewItem();
+            item.SubItems.Add("접수");
+            item.SubItems.Add("");
+            item.Checked = true;
+            item.Tag = "TMnRcv";
+            lstWorkList.Items.Add(item);
+
+
+            item = new ListViewItem();
+            item.SubItems.Add("증상");
+            item.SubItems.Add("");
+            item.Checked = true;
+            item.Tag = "TMdSympt";
+            lstWorkList.Items.Add(item);
+
+            item = new ListViewItem();
+            item.SubItems.Add("진단");
+            item.SubItems.Add("");
+            item.Checked = true;
+            item.Tag = "TMdDx";
+            lstWorkList.Items.Add(item);
+
+            item = new ListViewItem();
+            item.SubItems.Add("처방");
+            item.SubItems.Add("");
+            item.Checked = true;
+            item.Tag = "TMdPsb";
+            lstWorkList.Items.Add(item);
+
+            
+        }
+
+        
     }
 }

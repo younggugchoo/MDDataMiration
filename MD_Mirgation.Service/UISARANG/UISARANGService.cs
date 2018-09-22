@@ -44,7 +44,31 @@ namespace MD_DataMigration.Service.UISARANG
             using (Data.DatabaseFactory factory = new Data.DatabaseFactory("syBaseAnywhere"))
             {
                
-                DataSet ds = factory.ExecuteDataSet("SELECT top 10 TABLE_NAME, COUNT, TABLE_ID FROM SYSTABLE WHERE COUNT > 0 ORDER BY TABLE_NAME", CommandType.Text);
+                DataSet ds = factory.ExecuteDataSet(@"
+                                        select 
+                                          grp_table_name as TABLE_NAME
+                                          , max(table_id) as TABLE_ID
+                                          , max(isYearly) as IS_YEARLY
+                                          , cast(avg(cnt) as int) as AVG_CNT
+                                        from
+                                        (
+                                          select
+                                            table_name
+                                            , table_id
+                                            , count as cnt
+                                            , case when isnumeric(substring(table_name, len(table_name) - 3, len(table_name))) = 1
+                                                then  substring(table_name, 1, len(table_name) - 4) 
+                                                else table_name
+                                              end as grp_table_name
+                                            , case when isnumeric(substring(table_name, len(table_name) - 3, len(table_name))) = 1
+                                                then  'Y'
+                                                else 'N'
+                                              end as isYearly
+                                          from systable
+                                          where count > 0
+                                        )a
+                                        group by grp_table_name
+                                        order by grp_table_name", CommandType.Text);
 
                 return ds;
 

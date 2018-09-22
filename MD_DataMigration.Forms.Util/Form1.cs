@@ -20,7 +20,8 @@ using System.Reflection;
 using MD_DataMigration.Service.MDPARK.model;
 using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
-
+using System.Collections.Generic;
+using System.Collections;
 
 namespace MD_DataMigration.Forms.Util
 {
@@ -194,7 +195,7 @@ namespace MD_DataMigration.Forms.Util
                     foreach (DataRow dr in ds.Tables[0].Rows)
                     {
                         sb.AppendLine("\t\t/// <summary>");
-                        sb.AppendLine("\t\t/// " + dr["column_comment"].ToString());
+                        sb.AppendLine("\t\t/// " + dr["column_comment"].ToString().Replace("\n", "").Replace("\r",""));
                         sb.AppendLine("\t\t/// </summary>");
                         sb.Append(string.Format("\t\tpublic {0} {1}", ConvertDataType(dr["data_type"].ToString()), ToPascalCase(dr["column_name"].ToString())));
                         sb.AppendLine(" {get; set;}");
@@ -240,7 +241,7 @@ namespace MD_DataMigration.Forms.Util
                 string className = txtTableName.Text;
                 StringBuilder sb = new StringBuilder();
 
-                TCmAuth at = new TCmAuth();
+                //TCmAuth at = new TCmAuth();
                 Type t = Type.GetType(string.Format("MD_DataMigration.Service.MDPARK.model.{0}, MD_DataMigration.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", className));
 
                 PropertyInfo[] pi = t.GetProperties();
@@ -267,6 +268,11 @@ namespace MD_DataMigration.Forms.Util
 
         object missing = Type.Missing;
 
+        /// <summary>
+        /// 의사랑 테이블 정의서 생성
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button8_Click(object sender, EventArgs e)
         {
 
@@ -274,6 +280,8 @@ namespace MD_DataMigration.Forms.Util
             Excel.Application xlApp = new Excel.Application();
             Excel.Workbook xlWorkBook= null;
             Excel._Worksheet ExcelWorkSheet = null;
+
+            string tempStr="";
 
 
             try
@@ -305,41 +313,51 @@ namespace MD_DataMigration.Forms.Util
                 ExcelWorkSheet.Name = "테이블 목록";
 
 
-                for (int i = 1; i < dsTable.Tables[0].Rows.Count; i++)
-                {
-                    ExcelWorkSheet.Cells[1, 1] = "테이블명";
-                    ExcelWorkSheet.Cells[1, 2] = "설명";
+                ExcelWorkSheet.Cells[1, 1] = "테이블명";
+                ExcelWorkSheet.Cells[1, 2] = "년단위생성";
+                ExcelWorkSheet.Cells[1, 3] = "레코드 수(평균)";
+                ExcelWorkSheet.Cells[1, 4] = "설명";
 
-                    ExcelWorkSheet.Cells[i + 1, 1] = dsTable.Tables[0].Rows[i-1]["TABLE_NAME"].ToString();
+
+                for (int i = 0; i < dsTable.Tables[0].Rows.Count; i++)
+                {
+                    
+
+                    ExcelWorkSheet.Cells[i + 2, 1] = dsTable.Tables[0].Rows[i]["TABLE_NAME"].ToString();
+                    ExcelWorkSheet.Cells[i + 2, 2] = dsTable.Tables[0].Rows[i]["IS_YEARLY"].ToString();
+                    ExcelWorkSheet.Cells[i + 2, 3] = dsTable.Tables[0].Rows[i]["AVG_CNT"].ToString();
+                    
 
                 }
+
 
                 for (int i = 1; i < dsTable.Tables[0].Rows.Count; i++)
                 {
                     xlWorkBook.Worksheets.Add(); //Adding New sheet in Excel Workbook
                 }
-
-
+                
 
                 for (int i = 0; i < dsTable.Tables[0].Rows.Count; i++)
-
                 {
                     int r = 1; // Initialize Excel Row Start Position  = 1
-
-
+                    
 
                     ExcelWorkSheet = (Excel._Worksheet)xlWorkBook.Worksheets[i + 2];
+
+                    tempStr = dsTable.Tables[0].Rows[i]["TABLE_NAME"].ToString();
 
                     ExcelWorkSheet.Name = dsTable.Tables[0].Rows[i]["TABLE_NAME"].ToString();
 
                     DataSet dsCol = uISARANGService.RetrieveColumns(dsTable.Tables[0].Rows[i]["TABLE_ID"].ToString());
 
 
+                    ExcelWorkSheet.Cells[1, 1] = "컬럼명";
+                    ExcelWorkSheet.Cells[1, 2] = "설명";
+
                     for (int j = 0; j < dsCol.Tables[0].Rows.Count; j++)
                     {
 
-                        ExcelWorkSheet.Cells[1, 1] = "컬럼명";
-                        ExcelWorkSheet.Cells[1, 2] = "설명";
+                        
 
                         ExcelWorkSheet.Cells[j + 2, 1] = dsCol.Tables[0].Rows[j]["COLUMN_NAME"].ToString();
                         ExcelWorkSheet.Cells[j + 2, 2] = dsCol.Tables[0].Rows[j]["DESCRIPTION"].ToString();
@@ -361,6 +379,9 @@ namespace MD_DataMigration.Forms.Util
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace.ToString());
+                MessageBox.Show(ExcelWorkSheet.Name);
+                MessageBox.Show(tempStr);
             }
             finally
             {
@@ -371,6 +392,198 @@ namespace MD_DataMigration.Forms.Util
             }
 
             
+        }
+
+        /// <summary>
+        /// 병컴 테이블 정의서 생성
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button9_Click(object sender, EventArgs e)
+        {
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkBook = null;
+            Excel._Worksheet ExcelWorkSheet = null;
+
+            string tempStr = "";
+
+
+            try
+            {
+
+                BYEONGCOMService bYEONGCOMService = new BYEONGCOMService();
+
+                List<TableList> tables = ByengcomTables();
+
+
+                if (xlApp == null)
+                {
+                    MessageBox.Show("Excel is not properly installed!!");
+                    return;
+                }
+
+
+
+                Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
+                object misValue = System.Reflection.Missing.Value;
+
+
+                xlWorkBook = xlApp.Workbooks.Add(misValue);
+
+
+                xlWorkBook.Worksheets.Add();
+
+                ExcelWorkSheet = (Excel._Worksheet)xlWorkBook.Worksheets[1];
+                ExcelWorkSheet.Name = "테이블 목록";
+
+
+                ExcelWorkSheet.Cells[1, 1] = "DB 파일명";
+                ExcelWorkSheet.Cells[1, 2] = "테이블명";
+                ExcelWorkSheet.Cells[1, 3] = "설명";
+               
+
+
+                for (int i = 0; i < tables.Count; i++)
+                {
+
+
+                    ExcelWorkSheet.Cells[i + 2, 1] = tables[i].DbName;
+                    ExcelWorkSheet.Cells[i + 2, 2] = tables[i].TableName;
+
+                }
+
+
+                for (int i = 1; i < tables.Count; i++)
+                {
+                    xlWorkBook.Worksheets.Add(); //Adding New sheet in Excel Workbook
+                }
+
+
+                for (int i = 0; i < tables.Count; i++)
+                {
+                    int r = 1; // Initialize Excel Row Start Position  = 1
+
+
+                    ExcelWorkSheet = (Excel._Worksheet)xlWorkBook.Worksheets[i + 2];
+
+                    tempStr = tables[i].DbName + "_" + tables[i].TableName;
+
+                    ExcelWorkSheet.Name = tempStr;
+
+                    ArrayList cols = bYEONGCOMService.RetrieveTableColumnList(tables[i].DbName, tables[i].TableName);
+
+
+                    ExcelWorkSheet.Cells[1, 1] = "컬럼명";
+                    ExcelWorkSheet.Cells[1, 2] = "설명";
+
+                    for (int j = 0; j < cols.Count; j++)
+                    {
+
+
+
+                        ExcelWorkSheet.Cells[j + 2, 1] = cols[j];
+                        ExcelWorkSheet.Cells[j + 2, 2] = "";
+                    }
+
+                }
+
+
+                xlWorkBook.SaveAs("d:\\csharp-Excel_병컴.xls", Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlWorkBook.Close(true, misValue, misValue);
+                xlApp.Quit();
+
+                MessageBox.Show("Excel file created , you can find the file d:\\csharp-Excel_병컴.xls");
+
+                xlApp.Visible = true;
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace.ToString());
+                MessageBox.Show(ExcelWorkSheet.Name);
+                MessageBox.Show(tempStr);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(ExcelWorkSheet);
+                Marshal.ReleaseComObject(xlWorkBook);
+                Marshal.ReleaseComObject(xlApp);
+
+            }
+        }
+
+        private List<TableList> ByengcomTables()
+        {
+            List<TableList> tables = new List<TableList>();
+
+            tables.Add(new TableList("약제정보", "약제정보"));
+
+            tables.Add(new TableList("참고자료", "과거력"));
+            tables.Add(new TableList("참고자료", "묶음처방"));
+            tables.Add(new TableList("참고자료", "묶음처방내용"));
+            tables.Add(new TableList("참고자료", "용법"));
+            tables.Add(new TableList("참고자료", "증상"));
+            tables.Add(new TableList("참고자료", "진단명"));
+            tables.Add(new TableList("참고자료", "처방"));
+
+            tables.Add(new TableList("처방자료", "가격"));
+            tables.Add(new TableList("처방자료", "처방자료"));
+
+            tables.Add(new TableList("과거력", "과거력"));
+
+            tables.Add(new TableList("백신접종", "백신목록"));
+            tables.Add(new TableList("백신접종", "백신접종"));
+            tables.Add(new TableList("백신접종", "백신접종표"));
+
+            tables.Add(new TableList("심전도검사", "심전도"));
+
+            tables.Add(new TableList("일반검사", "접수검사"));
+            tables.Add(new TableList("일반검사", "진료검사"));
+            tables.Add(new TableList("일반검사", "체크검사"));
+
+            tables.Add(new TableList("입원정보", "입원정보"));
+
+            tables.Add(new TableList("진단서", "건강진단서"));
+            tables.Add(new TableList("진단서", "방사선판독서"));
+            tables.Add(new TableList("진단서", "범용진단서"));
+            tables.Add(new TableList("진단서", "사망진단서"));
+            tables.Add(new TableList("진단서", "사산증명서"));
+            tables.Add(new TableList("진단서", "상해진단서"));
+            tables.Add(new TableList("진단서", "일반진단서"));
+            tables.Add(new TableList("진단서", "직장진단서"));
+            tables.Add(new TableList("진단서", "진단서환경"));
+            tables.Add(new TableList("진단서", "진료의뢰서"));
+            tables.Add(new TableList("진단서", "진료확인서"));
+            tables.Add(new TableList("진단서", "출생증명서"));
+
+            tables.Add(new TableList("진료색인", "진료색인"));
+
+            tables.Add(new TableList("진료요약", "진료소견"));
+
+            tables.Add(new TableList("환자정보", "보험정보"));
+            tables.Add(new TableList("환자정보", "산재정보"));
+            tables.Add(new TableList("환자정보", "자보정보"));
+            tables.Add(new TableList("환자정보", "환자정보"));
+
+            tables.Add(new TableList("챠트1612", "진단명"));
+            tables.Add(new TableList("챠트1612", "처방"));
+            tables.Add(new TableList("챠트1612", "처방메모"));
+            tables.Add(new TableList("챠트1612", "특정내역"));
+
+            tables.Add(new TableList("처방전1612", "원내주사"));
+            tables.Add(new TableList("처방전1612", "처방"));
+            tables.Add(new TableList("처방전1612", "특정내역"));
+
+            return tables;
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            frmTextParser f = new frmTextParser();
+            f.Show();
+
         }
     }
 }

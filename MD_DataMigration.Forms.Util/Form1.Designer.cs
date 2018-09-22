@@ -43,30 +43,32 @@
             this.txtQueryId = new System.Windows.Forms.TextBox();
             this.btnGenConvertCode = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // txtResult
             // 
-            this.txtResult.Location = new System.Drawing.Point(17, 370);
+            this.txtResult.Location = new System.Drawing.Point(15, 342);
             this.txtResult.Multiline = true;
             this.txtResult.Name = "txtResult";
             this.txtResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtResult.Size = new System.Drawing.Size(570, 320);
+            this.txtResult.Size = new System.Drawing.Size(499, 296);
             this.txtResult.TabIndex = 17;
             // 
             // txtTableName
             // 
-            this.txtTableName.Location = new System.Drawing.Point(12, 324);
+            this.txtTableName.Location = new System.Drawing.Point(10, 299);
             this.txtTableName.Name = "txtTableName";
-            this.txtTableName.Size = new System.Drawing.Size(165, 22);
+            this.txtTableName.Size = new System.Drawing.Size(145, 21);
             this.txtTableName.TabIndex = 16;
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(184, 315);
+            this.button6.Location = new System.Drawing.Point(161, 291);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(159, 37);
+            this.button6.Size = new System.Drawing.Size(139, 34);
             this.button6.TabIndex = 15;
             this.button6.Text = "MDPark 테이블 생성";
             this.button6.UseVisualStyleBackColor = true;
@@ -74,26 +76,26 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(745, 63);
+            this.pictureBox1.Location = new System.Drawing.Point(335, 87);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(167, 162);
+            this.pictureBox1.Size = new System.Drawing.Size(146, 150);
             this.pictureBox1.TabIndex = 14;
             this.pictureBox1.TabStop = false;
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(184, 130);
+            this.button5.Location = new System.Drawing.Point(161, 120);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(125, 33);
+            this.button5.Size = new System.Drawing.Size(109, 30);
             this.button5.TabIndex = 13;
             this.button5.Text = "ACCESS BLOB";
             this.button5.UseVisualStyleBackColor = true;
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(12, 130);
+            this.button4.Location = new System.Drawing.Point(10, 120);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(146, 33);
+            this.button4.Size = new System.Drawing.Size(128, 30);
             this.button4.TabIndex = 12;
             this.button4.Text = "MS Access Conn";
             this.button4.UseVisualStyleBackColor = true;
@@ -101,9 +103,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(12, 88);
+            this.button3.Location = new System.Drawing.Point(10, 81);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(114, 36);
+            this.button3.Size = new System.Drawing.Size(100, 33);
             this.button3.TabIndex = 11;
             this.button3.Text = "syBase conn";
             this.button3.UseVisualStyleBackColor = true;
@@ -111,9 +113,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(12, 48);
+            this.button2.Location = new System.Drawing.Point(10, 44);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(114, 34);
+            this.button2.Size = new System.Drawing.Size(100, 31);
             this.button2.TabIndex = 10;
             this.button2.Text = "mariadb conn";
             this.button2.UseVisualStyleBackColor = true;
@@ -121,9 +123,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
+            this.button1.Location = new System.Drawing.Point(10, 11);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(114, 30);
+            this.button1.Size = new System.Drawing.Size(100, 28);
             this.button1.TabIndex = 9;
             this.button1.Text = "mssql conn";
             this.button1.UseVisualStyleBackColor = true;
@@ -131,9 +133,9 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(184, 273);
+            this.button7.Location = new System.Drawing.Point(161, 252);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(238, 36);
+            this.button7.Size = new System.Drawing.Size(208, 33);
             this.button7.TabIndex = 18;
             this.button7.Text = "클래스 파일생성(전체테이블)";
             this.button7.UseVisualStyleBackColor = true;
@@ -141,18 +143,18 @@
             // 
             // txtQuery
             // 
-            this.txtQuery.Location = new System.Drawing.Point(664, 370);
+            this.txtQuery.Location = new System.Drawing.Point(533, 342);
             this.txtQuery.Multiline = true;
             this.txtQuery.Name = "txtQuery";
             this.txtQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtQuery.Size = new System.Drawing.Size(570, 320);
+            this.txtQuery.Size = new System.Drawing.Size(499, 296);
             this.txtQuery.TabIndex = 17;
             // 
             // btnReadQuery
             // 
-            this.btnReadQuery.Location = new System.Drawing.Point(842, 315);
+            this.btnReadQuery.Location = new System.Drawing.Point(689, 291);
             this.btnReadQuery.Name = "btnReadQuery";
-            this.btnReadQuery.Size = new System.Drawing.Size(159, 37);
+            this.btnReadQuery.Size = new System.Drawing.Size(139, 34);
             this.btnReadQuery.TabIndex = 15;
             this.btnReadQuery.Text = "xml쿼리 읽어오기";
             this.btnReadQuery.UseVisualStyleBackColor = true;
@@ -160,16 +162,16 @@
             // 
             // txtQueryId
             // 
-            this.txtQueryId.Location = new System.Drawing.Point(670, 324);
+            this.txtQueryId.Location = new System.Drawing.Point(538, 299);
             this.txtQueryId.Name = "txtQueryId";
-            this.txtQueryId.Size = new System.Drawing.Size(165, 22);
+            this.txtQueryId.Size = new System.Drawing.Size(145, 21);
             this.txtQueryId.TabIndex = 16;
             // 
             // btnGenConvertCode
             // 
-            this.btnGenConvertCode.Location = new System.Drawing.Point(349, 316);
+            this.btnGenConvertCode.Location = new System.Drawing.Point(305, 292);
             this.btnGenConvertCode.Name = "btnGenConvertCode";
-            this.btnGenConvertCode.Size = new System.Drawing.Size(144, 36);
+            this.btnGenConvertCode.Size = new System.Drawing.Size(126, 33);
             this.btnGenConvertCode.TabIndex = 19;
             this.btnGenConvertCode.Text = "컨버트 코드생성";
             this.btnGenConvertCode.UseVisualStyleBackColor = true;
@@ -177,19 +179,41 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(331, 130);
+            this.button8.Location = new System.Drawing.Point(312, 11);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(231, 35);
+            this.button8.Size = new System.Drawing.Size(202, 32);
             this.button8.TabIndex = 20;
             this.button8.Text = "의사랑 테이블 정의서 생성";
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(312, 49);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(202, 32);
+            this.button9.TabIndex = 20;
+            this.button9.Text = "병컴 테이블 정의서 생성";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(596, 25);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(111, 50);
+            this.button10.TabIndex = 21;
+            this.button10.Text = "텍스트 파서";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1306, 791);
+            this.ClientSize = new System.Drawing.Size(1228, 811);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.btnGenConvertCode);
             this.Controls.Add(this.button7);
@@ -231,6 +255,8 @@
         private System.Windows.Forms.TextBox txtQueryId;
         private System.Windows.Forms.Button btnGenConvertCode;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
     }
 }
 

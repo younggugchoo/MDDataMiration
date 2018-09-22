@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Configuration;
 using System.IO;
+using System.Collections;
 
 namespace MD_DataMigration.Service.BYEONGCOM
 {
@@ -26,6 +27,8 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
         public event LogEventHandler WorkingInfo;
         public event EventHandler Convert_Completed;
+
+        public bool deletePrevData { get; set; }
 
         public void Dispose()
         {
@@ -56,6 +59,21 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
             Data.DatabaseFactory factory = new Data.DatabaseFactory();
             factory.DatabaseFactoryAccess("일반서식");
+
+            string[] restrictions1 = new string[4] { null, null, "서식내용", null };
+
+            DataTable tt = factory.GetConnection().GetSchema("Columns", restrictions1);
+
+            ArrayList col_Names = new ArrayList();
+
+            for (int j = 0; j < tt.Rows.Count; j++)
+            {
+                string column = tt.Rows[j][3].ToString();
+                col_Names.Add(column);
+            }
+
+
+
             dr = factory.ExecuteReader("Select top 10 * FROM 서식내용", CommandType.Text, null);
             //if (dr.HasRows)
             //{
@@ -72,7 +90,35 @@ namespace MD_DataMigration.Service.BYEONGCOM
         }
 
         /// <summary>
-        /// Start Convert
+        /// 테이블의 컬럼리스트 조회
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public ArrayList RetrieveTableColumnList(string dbName, string tableName)
+        {
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory())
+            {
+                factory.DatabaseFactoryAccess(dbName);
+
+                string[] restrictions1 = new string[4] { null, null, tableName, null };
+
+                DataTable tt = factory.GetConnection().GetSchema("Columns", restrictions1);
+
+                ArrayList col_Names = new ArrayList();
+
+                for (int j = 0; j < tt.Rows.Count; j++)
+                {
+                    string column = tt.Rows[j][3].ToString();
+                    col_Names.Add(column);
+                }
+
+                return col_Names;
+            }
+        }
+
+        /// <summary>
+        /// 병컴 데이터 변환 시작
         /// </summary>
         /// <param name="hosCd"></param>
         public void StartConvert(BaseInfo baseInfo)
@@ -80,6 +126,9 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
             mdParkService = new MDPARKService(TARGET_DB);
             mdParkService.WorkingInfo += MdParkService_WorkingInfo;
+
+            mdParkService.Convert_Completed += MdParkService_Convert_Completed;
+            
             mdParkService.StartConvert(baseInfo);
 
             this.baseInfo = baseInfo;
@@ -90,13 +139,20 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
 
             //진료자료
+            //환자정보,
             ConvertDiagnosisData convertDiagnosisData = new ConvertDiagnosisData(mdParkService);
-            convertDiagnosisData.ConvertData();
+            //convertDiagnosisData.ConvertData();
+
 
             //차트자료
-            ConvertChartData convertChartData = new ConvertChartData(mdParkService);
-            convertChartData.Convert();
+            //접수, 증상, 진단, 처방
+            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, "차트자료 StartConvert");
+            ConvertChartData convertChartData = new ConvertChartData(mdParkService, this.WorkingInfo);
+            convertChartData.ConvertData();
+                
 
+
+            /*
             //부가자료
             ConvertAdditionalData convertAdditionalData = new ConvertAdditionalData(mdParkService);
             convertAdditionalData.Convert();
@@ -105,55 +161,65 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //기초자료
             ConvertDefaultData convertDefaultData = new ConvertDefaultData(mdParkService);
             convertDefaultData.Convert();
-
+            */
 
 
             WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, "BYEONGCOMService EndConvert");
 
+            MdParkService_Convert_Completed (null,null);
 
         }
-        
-       
+
+
+        public void convertDiagnosisData() { 
+}
+
+        private void MdParkService_Convert_Completed(object sender, EventArgs e)
+        {
+            Convert_Completed(null, null);
+        }
+
+
 
 
         #region Convert Function Base
-        public void Convert_(string tDbFileName, string tableName)
-        {
-            using (Data.DatabaseFactory factory = new Data.DatabaseFactory())
-            {
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환시작", tableName));
+        //public void Convert_(string tDbFileName, string tableName)
+        //{
+        //    using (Data.DatabaseFactory factory = new Data.DatabaseFactory())
+        //    {
+        //        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환시작", tableName));
 
-                List<TAcCarInsuHist> lstTarget = new List<TAcCarInsuHist>();
-
-
-                #region select
-                factory.DatabaseFactoryAccess(tDbFileName);
-                string strSql = ReadQuery.GetInstance(fileName).GetQueryText(string.Format("{0}.{1}", tDbFileName, tableName));
+        //        List<TAcCarInsuHist> lstTarget = new List<TAcCarInsuHist>();
 
 
-                #endregion
-
-                DataSet ds = factory.ExecuteDataSet(strSql, CommandType.Text, null);
-
-                TAcCarInsuHist item = null;
-
-                #region convert
-                foreach (DataRow dr in ds.Tables[0].Rows)
-                {
-                    item = new TAcCarInsuHist();
-
-                    lstTarget.Add(item);
-
-                }
-
-                #endregion
+        //        #region select
+        //        factory.DatabaseFactoryAccess(tDbFileName);
+        //        string strSql = ReadQuery.GetInstance(fileName).GetQueryText(string.Format("{0}.{1}", tDbFileName, tableName));
 
 
-                mdParkService.InsertInfo(lstTarget);
-                //return lstAcPtntInfo;
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", tableName));
-            }
-        }
+        //        #endregion
+
+        //        DataSet ds = factory.ExecuteDataSet(strSql, CommandType.Text, null);
+
+        //        TAcCarInsuHist item = null;
+
+        //        #region convert
+        //        foreach (DataRow dr in ds.Tables[0].Rows)
+        //        {
+        //            item = new TAcCarInsuHist();
+
+        //            lstTarget.Add(item);
+
+        //        }
+
+        //        #endregion
+
+
+        //        mdParkService.InsertInfo(lstTarget);
+        //        //return lstAcPtntInfo;
+        //        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", tableName));
+        //    }
+        //}
 
         #endregion
 
