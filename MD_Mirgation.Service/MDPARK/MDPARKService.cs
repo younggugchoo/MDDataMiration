@@ -12,16 +12,17 @@ using System.Transactions;
 
 namespace MD_DataMigration.Service.MDPARK
 {
-    public class MDPARKService: IDisposable, IConvert
+    public class MDPARKService : IDisposable, IConvert
     {
         BaseInfo baseInfo;
         string factoryName = "";
+        private const string TARGET_DB = "MariaDbMDPark";
         Data.DatabaseFactory factory;
 
         public event LogEventHandler WorkingInfo;
         public event EventHandler Convert_Completed;
 
-      
+
 
         //변환된 환자목록
         public List<TAcPtnt> convertedTAcPtntInfos = null;
@@ -29,12 +30,33 @@ namespace MD_DataMigration.Service.MDPARK
         //변환된 접수데이터
         public List<TMnRcv> convertedTMnRcvInfos = null;
 
-        public MDPARKService(string value)
+        public DataTable dtTMnRcv { get; set; }
+
+        public MDPARKService()
         {
+            //if (!value.Equals(""))
+            //{
+            //    this.factoryName = value;
+            //    factory = new Data.DatabaseFactory(value);
+            //}
+
+            this.factoryName = "MariaDbMDPark";
+            factory = new Data.DatabaseFactory(TARGET_DB);
             
-            this.factoryName = value;
-            factory = new Data.DatabaseFactory(value);
         }
+
+        public string TargetDBName
+        {
+            get
+            {
+                return TARGET_DB;
+            }
+        }
+
+
+        public string SourceDBName { get; set; }
+        public string SourceSQLFile { get; set; }
+
 
 
         #region //Test
@@ -284,7 +306,7 @@ namespace MD_DataMigration.Service.MDPARK
         /// </summary>
         /// <param name="hosCd"></param>
         /// <returns></returns>
-        public List<TAcPtnt> retrievePtntList()
+        private List<TAcPtnt> retrievePtntList()
         {
             int ptntId = 0;
 
@@ -328,6 +350,57 @@ namespace MD_DataMigration.Service.MDPARK
             return acPtnt == null ? 0 : acPtnt.PtntId;
         }
 
+        /// <summary>
+        /// 접수번호 조회
+        /// </summary>
+        /// <param name="ptntId"></param>
+        /// <param name="oldRcvNo"></param>
+        /// <returns></returns>
+        public int GetRcvIdByOldRcvNo(int ptntId, string oldRcvNo)
+        {
+            string sql = "";
+            if (dtTMnRcv == null)
+            {
+
+
+                sql = string.Format(
+                    "SELECT " +
+                    "   rcv_id,  ptnt_id, DATE_FORMAT(rcv_dt, '%Y-%m-%d') as rcv_dt, old_rcv_no" +
+                    " FROM t_mn_rcv" +
+                    " WHERE hos_cd='{0}' ", GetBaseInfo.HosCd);
+
+
+
+                using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+                {
+                    dtTMnRcv = factory.ExecuteDataSet(sql).Tables[0];
+
+                    //convertedTMnRcvInfos = dt.DataTableToList<TMnRcv>();
+                }
+
+            }
+
+
+
+            // var dataRow = dtTMnRcv.AsEnumerable().Where(x => x.Field<int>("ptnt_id") == ptntId);
+            //DataTable dt = dataRow.CopyToDataTable<DataRow>();
+
+            //DataTable dt = dataRow.CopyToDataTable<DataRow>();
+
+            int rcvId = 0;
+            try
+            {
+                DataTable dt2 = dtTMnRcv.Select(string.Format("(ptnt_id = {0}) AND (old_rcv_no = '{1}')", ptntId.ToString(), oldRcvNo)).CopyToDataTable();
+                rcvId = Convert.ToInt32(dt2.Rows[0]["rcv_id"]);
+            }
+            catch
+            {
+
+            }
+
+
+            return rcvId;
+        }
 
         /// <summary>
         /// 접수번호 조회
@@ -337,7 +410,7 @@ namespace MD_DataMigration.Service.MDPARK
         /// <returns></returns>
         public int GetRcvId(int ptntId, string rcvDt)
         {
-            
+            /*
             string sql = "";
 
             int rcvId = 0;
@@ -366,16 +439,16 @@ namespace MD_DataMigration.Service.MDPARK
             }
 
             return rcvId;
+            */
             
-            /*
             string sql = "";
-            if (convertedTMnRcvInfos == null)
+            if (dtTMnRcv == null)
             {
 
 
                 sql = string.Format(
                     "SELECT " +
-                    "   rcv_id, ptnt_id, rcv_dt" +
+                    "   rcv_id,  ptnt_id, DATE_FORMAT(rcv_dt, '%Y-%m-%d') as rcv_dt" +
                     " FROM t_mn_rcv" +
                     " WHERE hos_cd='{0}' ", GetBaseInfo.HosCd);
 
@@ -383,17 +456,58 @@ namespace MD_DataMigration.Service.MDPARK
 
                 using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
                 {
-                    DataTable dt = factory.ExecuteDataSet(sql).Tables[0];
+                    dtTMnRcv = factory.ExecuteDataSet(sql).Tables[0];
 
-                    convertedTMnRcvInfos = dt.DataTableToList<TMnRcv>();
+                    //convertedTMnRcvInfos = dt.DataTableToList<TMnRcv>();
                 }
 
             }
-            TMnRcv mnRcv = convertedTMnRcvInfos.Where(x => x.PtntId == ptntId && x.RcvDt == rcvDt).DefaultIfEmpty().First();
 
-            return mnRcv == null ? 0 : mnRcv.RcvId;
-            */
+
+
+            // var dataRow = dtTMnRcv.AsEnumerable().Where(x => x.Field<int>("ptnt_id") == ptntId);
+            //DataTable dt = dataRow.CopyToDataTable<DataRow>();
+
+            //DataTable dt = dataRow.CopyToDataTable<DataRow>();
+
+            int rcvId = 0;
+            try
+            {
+                DataTable dt2 = dtTMnRcv.Select(string.Format("(ptnt_id = {0}) AND (rcv_dt = '{1}')", ptntId.ToString(), rcvDt)).CopyToDataTable();
+                rcvId = Convert.ToInt32(dt2.Rows[0]["rcv_id"]);
+            }
+            catch
+            {
+               
+            }
+        
+
+            return rcvId;
+
+            /*
+            var result = (from myRow in dtTMnRcv.AsEnumerable()
+                         where myRow.Field<string>("ptnt_id") == ptntId.ToString() //&& myRow.Field<string>("rcv_dt") == rcvDt
+                         select new
+                         {
+                             rcvId = (int) myRow["rcv_id"]
+                         }).Take(1);
+
             
+
+
+            foreach (var item in result)
+            {
+
+                rcvId = item.rcvId;
+                break;
+            }
+
+            return rcvId;
+            //TMnRcv mnRcv = convertedTMnRcvInfos.Where(x => x.PtntId == ptntId && x.RcvDt == rcvDt).DefaultIfEmpty().First();
+
+            //return mnRcv == null ? 0 : mnRcv.RcvId;
+            */
+
         }
 
 

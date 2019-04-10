@@ -13,7 +13,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 {
     public class ConvertChartData
     {
-        private const string TARGET_DB = "MariaDbMDPark";
+        
         private const string fileName = "sql-byeongcom.xml";
 
         public event LogEventHandler WorkingInfo;
@@ -64,8 +64,8 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //접수는 진료자료>진료색인 파일에서 처리함.
             //foreach (string dbFile in orderChartFiles)
             //{
-                //WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
-                //ConvertTMnRcv( "챠트", Path.GetFileNameWithoutExtension(dbFile), "처방_접수");
+            //WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
+            //ConvertTMnRcv( "챠트", Path.GetFileNameWithoutExtension(dbFile), "처방_접수");
             //}
 
             //증상
@@ -98,13 +98,13 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
 
                 //Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)
-                if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) > 1012)
+                if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) > 1012) //2010년12월 이후
                     tempQueryId = "처방2";
                 else
                     tempQueryId = "처방";
 
                 ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), tempQueryId);
-                //ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), "원내주사");
+                //ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), "원내주사"); //원내주사는 처방과 겹침.
             }
         }
 
@@ -172,7 +172,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                     mnRcv.InsDt = dr["진료일자"].ToString();
                     mnRcv.InsId = "TRN";
                     mnRcv.InsIp = "0.0.0.0";
-                    mnRcv.InsuGb = dr["INSU_GB"].ToString();
+                    mnRcv.InsGb = dr["INSU_GB"].ToString();
                     mnRcv.MedEndDt = dr["진료일자"].ToString();
                     mnRcv.MediSec = 0;
                     mnRcv.MedPayYn = "Y";
@@ -185,7 +185,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                     mnRcv.RcvDt = dr["진료일자"].ToString();
                     
-                    mnRcv.RcvNo = dr["챠트번호"].ToString()  + dr["진료일자"].ToString().Replace("-", "");
+                    mnRcv.OldRcvNo = dr["챠트번호"].ToString()  + dr["진료일자"].ToString().Replace("-", "");
                     mnRcv.RcvStat = "A"; //
                     //Rcv.ReductCd = "";
                     mnRcv.UpdDt = DateTime.Now.ToString();
@@ -482,7 +482,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                     }
 
                     mdPsb.PsbCd = dr["처방코드"].ToString();
-                    mdPsb.PsbNm = dr["처방명칭"].ToString();
+                    //mdPsb.PsbNm = dr["처방명칭"].ToString();
 
                     switch (dr["코드구분"].ToString())
                     {
@@ -517,9 +517,9 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                     mdPsb.PsbPrice = "";
 
-                    mdPsb.Dose = dr["용량"].ToString();
-                    mdPsb.DayCnt = dr["일투"].ToString();
-                    mdPsb.Duration = dr["일수"].ToString();
+                    mdPsb.Qd = dr["용량"].ToString();
+                    mdPsb.Sd = dr["일투"].ToString();
+                    mdPsb.Td = dr["일수"].ToString();
 
                     mdPsb.InOutGb = "";
 

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace MD_DataMigration.Service.BYEONGCOM
 {
-    public class ConvertDiagnosisData
+    public class ConvertDiagnosisData : IDisposable
     {
-        private const string TARGET_DB = "MariaDbMDPark";
+        //private const string TARGET_DB = "MariaDbMDPark";
         private const string fileName = "sql-byeongcom.xml";
 
         public event LogEventHandler WorkingInfo;
@@ -19,7 +19,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
         private MDPARKService mdParkService;
 
         //변환된 환자목록
-        private List<TAcPtnt> convertedTAcPtntInfos = null;
+        //private List<TAcPtnt> convertedTAcPtntInfos = null;
 
 
         public ConvertDiagnosisData(MDPARKService mDPARKService)
@@ -42,10 +42,8 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //ConvertTAcInlcInsuHist("환자정보", "보험정보");
             //입원정보
 
-            //진료색인(진료데이터)
-            
-           
-            ConvertTMnRcv("진료색인", "진료색인");
+            //진료색인(진료데이터) (접수)
+            ConvertTMnRcv("진료색인", "진료색인");  
             
             //진료소견
 
@@ -191,10 +189,6 @@ namespace MD_DataMigration.Service.BYEONGCOM
             {
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환시작", tableName));
 
-
-                
-
-
                 #region select
                 factory.DatabaseFactoryAccess(tDbFileName);
 
@@ -209,7 +203,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 for (int sYear = minYear; sYear <= maxYear; sYear++)
                 {
-                    Logger.Logger.DEBUG(sYear.ToString());
+                    Logger.Logger.INFO("접수데이터:" + sYear.ToString());
                     //continue;
 
                     List<TMnRcv> lstMnRcvs = new List<TMnRcv>();
@@ -246,7 +240,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                             continue;
                         }
 
-                        mnRcv.RcvNo = dr["챠트번호"].ToString() + dr["진료일자"].ToString().Replace("-", "");
+                        mnRcv.OldRcvNo = dr["챠트번호"].ToString() + dr["진료일자"].ToString().Replace("-", "");
                         mnRcv.HosCd = mdParkService.GetBaseInfo.HosCd; //병원코드
                         mnRcv.DeptId = Convert.ToInt32(dr["진료과"]);
                         mnRcv.UserId = dr["보조문자열"].ToString();
@@ -267,7 +261,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                         mnRcv.RcvStat = "PF"; //접수상태
                         mnRcv.OldRcvNo = dr["챠트번호"].ToString() + dr["진료일자"].ToString().Replace("-", ""); //구 진료 NO
 
-                        mnRcv.InsuGb = dr["보험구분"].ToString();
+                        mnRcv.InsGb = dr["보험구분"].ToString();
                         mnRcv.OrderDt = dr["진료일자"].ToString(); //오더 시간
                         mnRcv.PacsId = "";
 
@@ -362,9 +356,44 @@ namespace MD_DataMigration.Service.BYEONGCOM
             throw new NotImplementedException();
         }
 
-       
+        #region IDisposable Support
+        private bool disposedValue = false; // 중복 호출을 검색하려면
 
-        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 관리되는 상태(관리되는 개체)를 삭제합니다.
+                }
+
+                // TODO: 관리되지 않는 리소스(관리되지 않는 개체)를 해제하고 아래의 종료자를 재정의합니다.
+                // TODO: 큰 필드를 null로 설정합니다.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: 위의 Dispose(bool disposing)에 관리되지 않는 리소스를 해제하는 코드가 포함되어 있는 경우에만 종료자를 재정의합니다.
+        // ~ConvertDiagnosisData() {
+        //   // 이 코드를 변경하지 마세요. 위의 Dispose(bool disposing)에 정리 코드를 입력하세요.
+        //   Dispose(false);
+        // }
+
+        // 삭제 가능한 패턴을 올바르게 구현하기 위해 추가된 코드입니다.
+        public void Dispose()
+        {
+            // 이 코드를 변경하지 마세요. 위의 Dispose(bool disposing)에 정리 코드를 입력하세요.
+            Dispose(true);
+            // TODO: 위의 종료자가 재정의된 경우 다음 코드 줄의 주석 처리를 제거합니다.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
+
+
+
+
 
         #endregion //진료데이터 변환
     }

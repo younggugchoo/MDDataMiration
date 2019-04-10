@@ -141,12 +141,12 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 
 		/// </summary>
-		public string RcvNo {get; set;}
+		//public string OldRcvNo {get; set;}
 
 		/// <summary>
-		/// 
+		/// 보험구분 : 의료보험, 건강보험, 본인
 		/// </summary>
-		public string InsuGb {get; set;}
+		public string InsGb { get; set;}
 
 		/// <summary>
 		/// 

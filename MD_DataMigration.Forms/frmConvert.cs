@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using MD_DataMigration.Service;
+using MD_DataMigration.Service.BYEONGCOM;
+using MD_DataMigration.Service.NIX;
+using MD_DataMigration.Service.UISARANG;
+using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using MD_DataMigration.Service;
-using MD_DataMigration.Service.BYEONGCOM;
-using System.Runtime.InteropServices;
-
 
 namespace MD_DataMigration.Forms
 {
@@ -24,6 +18,10 @@ namespace MD_DataMigration.Forms
         private string currentWork;
         private decimal targetCount;
         private decimal currentCount;
+
+        private int startYear;
+        private int endYear;
+
 
         Thread th;
 
@@ -40,15 +38,27 @@ namespace MD_DataMigration.Forms
             tabControl1.ItemSize = new Size(0, 1);
             tabControl1.SizeMode = TabSizeMode.Fixed;
 
+            tabConfig.Appearance = TabAppearance.FlatButtons;
+            tabConfig.ItemSize = new Size(0, 1);
+            tabConfig.SizeMode = TabSizeMode.Fixed;
+
+            tabConfig.Visible = false;
+
             curTabPage = 0;
             btnPrev.Enabled = false;
 
             SetHeight(lstWorkList, 20);
-            SettingLstWorkList();
-            
+            SettingLstWorkListInit();
 
-            
+            NixConfigInit();
+
+            UisaranConfigInit();
+
+
         }
+
+        
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -62,13 +72,25 @@ namespace MD_DataMigration.Forms
         private void StartConvert()
         {
             MD_DataMigration.Service.IConvert convert = null;
+            BaseInfo baseInfo = new BaseInfo();
+
+            baseInfo.StartYear = startYear;
+            baseInfo.EndYear = endYear;
 
             switch (sourceSystem)
             {
-                case 1:
+                case 1: //병컴
                     convert = new BYEONGCOMService();
                     
                     break;
+                case 2: //NIX
+                    convert = new NIXService();                    
+                    break;
+
+                case 3:
+                    convert = new UISARANGService();                   
+                    break;
+
                 default:
                     break;
             }
@@ -77,15 +99,29 @@ namespace MD_DataMigration.Forms
             {
                 convert.WorkingInfo += Convert_WorkingInfo;
                 convert.Convert_Completed += Convert_Completed;
-                BaseInfo baseInfo = new BaseInfo();
+
 
                 baseInfo.HosCd = txtHosCd.Text;
 
+                if (baseInfo.ConvertItems == null) baseInfo.ConvertItems = new System.Collections.Generic.List<string>();
+
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(delegate ()
+                    {
+                        foreach (ListViewItem item in lstWorkList.Items)
+                        {
+                            if (item.Checked)
+                            {
+                                
+                                baseInfo.ConvertItems.Add(item.Tag.ToString());
+                            }
+                        }
+                    }));
+                }
+                
                 convert.StartConvert(baseInfo);
             }
-
-
-            
         }
 
         /// <summary>
@@ -191,7 +227,7 @@ namespace MD_DataMigration.Forms
 
         private void RefreshProgressRatio()
         {
-            this.Invoke(new MethodInvoker(
+           this.Invoke(new MethodInvoker(
            delegate ()
            {
                
@@ -216,6 +252,8 @@ namespace MD_DataMigration.Forms
             {
                 btnClose.Enabled = true;
                 MessageBox.Show("데이터 변환이 완료되었습니다.오류목록을 확인하시기 바랍니다.");
+
+               
             }));
 
             
@@ -261,13 +299,24 @@ namespace MD_DataMigration.Forms
 
         private void radioSourceCheckedChanged(object sender, EventArgs e)
         {
+
             RadioButton rad = (RadioButton)sender;
             if (rad.Checked)
             {
+                tabConfig.Visible = true;
                 switch (rad.Name)
                 {
                     case "rad1":
                         sourceSystem = 1;
+                        tabConfig.SelectTab(0);
+                        break;
+                    case "rad2":
+                        sourceSystem = 2;
+                        tabConfig.SelectTab(1);
+                        break;
+                    case "rad3":
+                        sourceSystem = 3;
+                        tabConfig.SelectTab(2);
                         break;
                     default:
                         sourceSystem = 0;
@@ -279,6 +328,17 @@ namespace MD_DataMigration.Forms
 
         private void btnNext_Click(object sender, EventArgs e)
         {
+
+            if (curTabPage == 0 && sourceSystem == 2) //NIX
+            {
+                if (!NixConfigValidate()) return;
+            }
+
+            if (curTabPage == 0 && sourceSystem == 3) //의사랑
+            {
+                if (!UiSarangConfigValidate()) return;
+            }
+
             btnPrev.Enabled = true;
 
             curTabPage++;
@@ -328,6 +388,8 @@ namespace MD_DataMigration.Forms
 
         #endregion
 
+
+        #region 콘트롤 기본 초기설정
         private void SetHeight(ListView LV, int height)
         {
             // listView 높이 지정
@@ -336,20 +398,20 @@ namespace MD_DataMigration.Forms
             LV.SmallImageList = imgList;
         }
 
-        private void SettingLstWorkList()
+        private void SettingLstWorkListInit()
         {
             ListViewItem item = new ListViewItem();
 
             item.SubItems.Add("환자정보");
             item.SubItems.Add("");
-            item.Checked = true;
+            item.Checked = false;
             item.Tag = "TAcPtnt";
             lstWorkList.Items.Add(item);
 
             item = new ListViewItem();
             item.SubItems.Add("접수");
             item.SubItems.Add("");
-            item.Checked = true;
+            item.Checked = false;
             item.Tag = "TMnRcv";
             lstWorkList.Items.Add(item);
 
@@ -357,27 +419,105 @@ namespace MD_DataMigration.Forms
             item = new ListViewItem();
             item.SubItems.Add("증상");
             item.SubItems.Add("");
-            item.Checked = true;
+            item.Checked = false;
             item.Tag = "TMdSympt";
             lstWorkList.Items.Add(item);
 
             item = new ListViewItem();
             item.SubItems.Add("진단");
             item.SubItems.Add("");
-            item.Checked = true;
+            item.Checked = false;
             item.Tag = "TMdDx";
             lstWorkList.Items.Add(item);
 
             item = new ListViewItem();
             item.SubItems.Add("처방");
             item.SubItems.Add("");
-            item.Checked = true;
+            item.Checked = false;
             item.Tag = "TMdPsb";
             lstWorkList.Items.Add(item);
 
             
         }
 
-        
+        private void NixConfigInit()
+        {
+            for (int i = 2000; i < DateTime.Now.Year + 1; i++)
+            {
+                cboNixStartYear.Items.Add(i.ToString());
+                cboNixEndYear.Items.Add(i.ToString());
+            }
+
+            cboNixStartYear.SelectedIndex = 0;
+            cboNixEndYear.SelectedIndex = cboNixEndYear.Items.Count-1;
+        }
+
+        private void UisaranConfigInit()
+        {
+            for (int i = 1995; i < DateTime.Now.Year + 1; i++)
+            {
+                cboUisarangStartYear.Items.Add(i.ToString());
+                cboUisarangEndYear.Items.Add(i.ToString());
+            }
+
+            cboUisarangStartYear.SelectedIndex = 0;
+            cboUisarangEndYear.SelectedIndex = cboUisarangEndYear.Items.Count-1;
+        }
+        #endregion
+
+        #region 유효성 체크
+
+        private bool NixConfigValidate()
+        {
+            bool ret = true;
+
+
+            if (Convert.ToInt32(cboNixStartYear.SelectedItem) > Convert.ToInt32(cboNixEndYear.SelectedItem))
+            {
+                MessageBox.Show("끝년도가 시작년도보다 이전입니다.");
+                return false;
+            }
+
+            return ret;
+        }
+
+
+        private bool UiSarangConfigValidate()
+        {
+            bool ret = true;
+
+
+            if (Convert.ToInt32(cboUisarangStartYear.SelectedItem) > Convert.ToInt32(cboUisarangEndYear.SelectedItem))
+            {
+                MessageBox.Show("끝년도가 시작년도보다 이전입니다.");
+                return false;
+            }
+
+            return ret;
+        }
+
+
+
+        #endregion
+
+        private void cboNixStartYear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            startYear = Convert.ToInt32(cboNixStartYear.SelectedItem);
+        }
+
+        private void cboNixEndYear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            endYear = Convert.ToInt32(cboNixEndYear.SelectedItem);
+        }
+
+        private void cboUisarangStartYear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            startYear = Convert.ToInt32(cboUisarangStartYear.SelectedItem);
+        }
+
+        private void cboUisarangEndYear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            endYear = Convert.ToInt32(cboUisarangEndYear.SelectedItem);
+        }
     }
 }

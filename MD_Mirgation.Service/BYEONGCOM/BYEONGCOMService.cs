@@ -18,7 +18,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
     public class BYEONGCOMService : IConvert, IDisposable
     {
 
-        private const string TARGET_DB = "MariaDbMDPark";
+        //private const string TARGET_DB = "MariaDbMDPark";
         private const string fileName = "sql-byeongcom.xml";
 
         private BaseInfo baseInfo;
@@ -28,7 +28,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
         public event LogEventHandler WorkingInfo;
         public event EventHandler Convert_Completed;
 
-        public bool deletePrevData { get; set; }
+        
 
         public void Dispose()
         {
@@ -39,17 +39,6 @@ namespace MD_DataMigration.Service.BYEONGCOM
         {
             WorkingInfo?.Invoke(workResult, message);
         }
-
-        public List<string> ConvertTaretItems()
-        {
-            List<string> targets = new List<string>();
-
-            targets.Add("환자정보");
-
-
-            return targets;
-        }
-
 
         public DbDataReader TestConnection()
         {
@@ -124,7 +113,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
         public void StartConvert(BaseInfo baseInfo)
         {
 
-            mdParkService = new MDPARKService(TARGET_DB);
+            mdParkService = new MDPARKService();
             mdParkService.WorkingInfo += MdParkService_WorkingInfo;
 
             mdParkService.Convert_Completed += MdParkService_Convert_Completed;
@@ -139,13 +128,20 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
 
             //진료자료
-            //환자정보,
-            ConvertDiagnosisData convertDiagnosisData = new ConvertDiagnosisData(mdParkService);
-            //convertDiagnosisData.ConvertData();
+            //환자정보, 접수
+            string workItem = baseInfo.ConvertItems.FirstOrDefault(x => x == "TAcPtnt");
+
+            if (workItem != null)
+            {
+                using (ConvertDiagnosisData convertDiagnosisData = new ConvertDiagnosisData(mdParkService))
+                {
+                    convertDiagnosisData.ConvertData();
+                }
+            }
 
 
             //차트자료
-            //접수, 증상, 진단, 처방
+            //증상, 진단, 처방
             WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, "차트자료 StartConvert");
             ConvertChartData convertChartData = new ConvertChartData(mdParkService, this.WorkingInfo);
             convertChartData.ConvertData();

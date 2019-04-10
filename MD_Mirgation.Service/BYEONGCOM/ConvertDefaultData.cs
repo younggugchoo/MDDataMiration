@@ -13,7 +13,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
     public class ConvertDefaultData
     {
 
-        private const string TARGET_DB = "MariaDbMDPark";
+        
         private const string fileName = "sql-byeongcom.xml";
 
         public event LogEventHandler WorkingInfo;

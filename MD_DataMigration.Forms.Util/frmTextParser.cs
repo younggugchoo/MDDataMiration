@@ -1,13 +1,11 @@
-﻿using System;
+﻿using MD_DataMigration.Service.UISARANG.Model;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MD_DataMigration.Forms.Util
@@ -96,12 +94,18 @@ namespace MD_DataMigration.Forms.Util
 
             List<string> fileList = DirSearch(sDir);
 
-            foreach(string file in fileList)
+            WriteLog(fileList.Count.ToString());
+
+            foreach (string file in fileList)
             {
                 FileInfo f = new FileInfo(file);
 
                 if (f.Length > 0)
-                ReadFile(file);
+                {
+                    WriteLog(f.FullName);
+                    ReadFile(file);
+                }
+
             }
 
             MessageBox.Show("Parsing Completed...");
@@ -143,13 +147,10 @@ namespace MD_DataMigration.Forms.Util
             try
             {
 
-                // Read the file and display it line by line.  
-                
+                // 파일을 라인단위로 읽어서 파싱실행                  
                 while ((line = file.ReadLine()) != null)
                 {
                     List<string> result = TextParsing(line);
-
-
                     counter++;
                 }
                 Parsing_Completed?.Invoke(Path.GetFileName(filePath), null);
@@ -256,6 +257,116 @@ namespace MD_DataMigration.Forms.Util
             {
                 th.Suspend();
                 Thread.Sleep(5000);
+            }
+        }
+
+
+        private void WriteLog(string logText)
+        {
+            this.Invoke(new MethodInvoker(
+            delegate ()
+            {
+                textBox4.AppendText(logText + Environment.NewLine);
+            }));
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                label2.Text =  openFileDialog1.FileName;
+            }
+
+
+
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string filePath = openFileDialog1.FileName;
+
+            List<JSO> ret = ConvertParserData<JSO>(filePath);
+
+            /*
+            int counter = 0;
+            string line;
+            System.IO.StreamReader file = new System.IO.StreamReader(filePath);
+            try
+            {
+                // 파일을 라인단위로 읽어서 파싱실행                  
+                while ((line = file.ReadLine()) != null)
+                {
+                    List<string> result = TextParsing(line);
+
+                    JSO ret =  ConvertParserData<JSO>(result);
+                    counter++;
+                }
+                Parsing_Completed?.Invoke(Path.GetFileName(filePath), null);
+            }
+            catch (Exception ex)
+            {
+                Parsing_Error?.Invoke(Path.GetFileName(filePath), null);
+                this.Invoke(new MethodInvoker(
+                delegate ()
+                {
+                    textBox4.AppendText(string.Format("{0}=================================================\r\n", filePath));
+                    textBox4.AppendText(string.Format("{0}\r\n", ex.Message.ToString()));
+                    textBox4.AppendText(string.Format("{0}\r\n", ex.Source.ToString()));
+                    textBox4.AppendText(string.Format("{0}\r\n", ex.StackTrace.ToString()));
+                }));
+
+            }
+
+            file.Close();
+            //System.Console.WriteLine("There were {0} lines.", counter);
+            // Suspend the screen.  
+            //System.Console.ReadLine();
+
+            */
+
+        }
+
+        private List<T> ConvertParserData<T>(string filePath) where T : class, new()
+        {
+            string line;
+            List<T> convertResult = new List<T>();
+            int idx = 0;
+            //파일읽기
+            using (System.IO.StreamReader file = new System.IO.StreamReader(filePath, Encoding.Default))
+            {
+                
+                try
+                {
+                    // 파일을 라인단위로 읽어서 파싱실행                  
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        List<string> colsData = TextParsing(line); //1개의 컬럼결과 반환
+
+                        T obj = new T();
+
+                        if (colsData.Count != obj.GetType().GetProperties().Count())
+                        {
+                            throw new KeyNotFoundException();
+                        }
+
+                        for (int i = 0; i < colsData.Count; i++)
+                        {
+                            var prop = obj.GetType().GetProperties()[i];
+                            PropertyInfo propertyInfo = obj.GetType().GetProperty(prop.Name);
+                            propertyInfo.SetValue(obj, colsData[i].Replace("'", "").Replace("\\x0d\\x0a", Environment.NewLine));
+                        }
+                        convertResult.Add(obj);
+                    }
+
+                    return convertResult;
+                }
+                catch
+                {
+                    return null;
+                }
+
+                //return null;
             }
         }
     }

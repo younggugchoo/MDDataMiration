@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace MD_DataMigration.Service
 {
 
@@ -21,12 +22,9 @@ namespace MD_DataMigration.Service
         /// <param name="baseInfo"></param>
         void StartConvert(BaseInfo baseInfo);
 
-        /// <summary>
-        /// 변환대상 목록 조회
-        /// </summary>
-        /// <returns></returns>
-        List<string> ConvertTaretItems();
-        
+
+
+
 
     }   
 }

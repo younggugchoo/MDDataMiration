@@ -28,14 +28,14 @@ namespace MD_DataMigration.Service.MDPARK.model
 		public string MainYn {get; set;}
 
 		/// <summary>
-		/// 
+		/// 법정전염병 
 		/// </summary>
 		public string LawDzGb {get; set;}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public string ReportYn {get; set;}
+        /// <summary>
+        /// 법정전염병 신고여부
+        /// </summary>
+        public string ReportYn {get; set;}
 
 		/// <summary>
 		/// 현 Row의 사용 여부(Y/N)사용중이면 Y,  삭제되어 사용하지 않는다면 N으로 표기함.

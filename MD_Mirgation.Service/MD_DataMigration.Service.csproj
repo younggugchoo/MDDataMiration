@@ -168,9 +168,29 @@
     <Compile Include="MDPARK\model\TOpMedOff.cs" />
     <Compile Include="MDPARK\model\TOpUser.cs" />
     <Compile Include="MDPARK\model\TZip.cs" />
+    <Compile Include="NIX\ConvertDianosis.cs" />
+    <Compile Include="NIX\ConvertPatient.cs" />
+    <Compile Include="NIX\ConvertPrescription.cs" />
+    <Compile Include="NIX\ConvertReceipt.cs" />
+    <Compile Include="NIX\ConvertSymptom..cs" />
+    <Compile Include="NIX\model\NIXMedi.cs" />
     <Compile Include="NIX\NIXService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadQuery.cs" />
+    <Compile Include="UISARANG\ConvertDianosis.cs" />
+    <Compile Include="UISARANG\ConvertPatient.cs" />
+    <Compile Include="UISARANG\ConvertPrescription.cs" />
+    <Compile Include="UISARANG\ConvertReceipt.cs" />
+    <Compile Include="UISARANG\ConvertSymptom.cs" />
+    <Compile Include="UISARANG\Model\DISO.cs" />
+    <Compile Include="UISARANG\Model\EXAMCODE.cs" />
+    <Compile Include="UISARANG\Model\JSO.cs" />
+    <Compile Include="UISARANG\Model\PATIENT.cs" />
+    <Compile Include="UISARANG\Model\PATIENT1.cs" />
+    <Compile Include="UISARANG\Model\SUGACODE.cs" />
+    <Compile Include="UISARANG\Model\SUTAKCODEO.cs" />
+    <Compile Include="UISARANG\Model\TRO.cs" />
+    <Compile Include="UISARANG\Parser.cs" />
     <Compile Include="UISARANG\UISARANGService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +206,10 @@
   <ItemGroup>
     <Content Include="sql\sql-byeongcom.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sql\sql-nix.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup />

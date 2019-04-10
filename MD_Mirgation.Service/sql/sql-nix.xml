@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+
+  
+  <select id="ConvertCommon.RetrieveDatabase">
+    SELECT 
+      name
+      , database_id
+      , create_date
+	  FROM sys.databases
+  </select>
+
+  <select id="ConvertCommon.retrieveMedi">
+    SELECT
+      Code
+      , Unit
+      , Br1
+      , Br11
+      , Br12
+      , Br13
+      , Br14
+      , Br15
+      , Br2
+      , Br21
+      , Br22
+      , Br23
+      , Br24
+      , Br25
+      , Br3
+      , Br31
+      , Br32
+      , Br33
+      , Br34
+      , Br35
+      , Br4
+      , Br41
+      , Br42
+      , Br43
+      , Br44
+      , Br45
+      , Br5
+      , Br51
+      , Br52
+      , Br53
+      , Br54
+      , Br55
+      , Br6
+      , Br61
+      , Br62
+      , Br63
+      , Br64
+      , Br65
+      , Br7
+      , Br71
+      , Br72
+      , Br73
+      , Br74
+      , Br75
+      , Jk1
+      , Jk2
+      , Jk3
+      , Jk4
+      , Jk5
+      , price11
+      , price12
+      , price13
+      , price14
+      , price15
+      , price21
+      , price22
+      , price23
+      , price24
+      , price25
+      , price31
+      , price32
+      , price33
+      , price34
+      , price35
+      , price41
+      , price42
+      , price43
+      , price44
+      , price45
+      , price51
+      , price52
+      , price53
+      , price54
+      , price55
+    FROM NixPen.dbo.Medi
+
+  </select>
+  
+  
+  <!-- 환자정보 -->
+  <select id="ConvertPatient.ConvertTAcPtntInfo">
+    SELECT 
+      A.Code
+      , A.Nm
+      , SUBSTRING(A.Id, 1, 6) AS Jumin1
+      , SUBSTRING(A.Id, 7, 13) AS Jumin2
+      , CASE WHEN SUBSTRING(A.Id, 7, 1) % 2 = 0 THEN  'F' ELSE 'M' END AS Gender
+      ,  CASE SUBSTRING(A.Id, 7, 1)  WHEN 1 THEN '19'
+          WHEN 2 THEN '19'
+          WHEN 3 THEN '20'
+          WHEN 4 THEN '20'
+          END
+          + SUBSTRING(A.Id, 1, 6) AS BirthDay
+      , A.Post
+      , A.Addr1
+      , A.Addr2
+      , A.Hpp
+      , A.Tel
+      , CASE WHEN A.Susin = 1 THEN 'Y' ELSE 'N' END AS Susin
+      , A.EMail
+      , CASE WHEN LEN(A.Ymd) = 8 THEN CONVERT(datetime, A.Ymd , 120) ELSE GETDATE() END AS Ymd
+      , A.JhId5
+      , ISNULL(B.Agree, '0') AS Agree
+      , A.antenatal
+      , A.Mm
+      , A.Jk1
+      , A.Jk2
+      , A.Jk3
+      , A.Jk4
+      , A.Jk5
+    FROM NixPen.DBO.Person A
+    LEFT JOIN NIXPENBASE.dbo.Person_SignList B ON A.Code = B.Chtno
+    WHERE
+      LEN(a.Id) = 13
+  </select>
+
+
+  <!--접수-->
+  <select id="ConvertChart.ConvertTMnRcv">
+    SELECT
+      A.*
+      , CONVERT(VARCHAR(19), CAST(A.Ymd AS DATETIME), 120) AS JubsuTime
+      , CONVERT(VARCHAR(19), B.JinStartTime, 120) AS JinStartTime
+      , CONVERT(VARCHAR(19), B.JinEndTime, 120) AS JinEndTime
+      , CONVERT(VARCHAR(19), B.SunapTime, 120) AS  SunapTime
+      , ISNULL(C.license, '') AS license
+    FROM NIXPEN$YYYY$.dbo.List$YYYY$ A
+    JOIN NIXPEN$YYYY$.dbo.TimeLog$YYYY$ B ON A.Code = B.Code AND A.Ymd = B.Ymd
+    LEFT JOIN
+    (
+      SELECT ymd, code, license
+      FROM
+      (
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$01
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$02
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$03
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$04
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$05
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$06
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$07
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$08
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$09
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$10
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$11
+        UNION ALL
+        SELECT ymd, code, license
+        FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YY$12
+
+      )A
+      GROUP BY ymd, code, license
+    ) C ON A.Ymd = C.Ymd AND A.Code = C.Code
+    ORDER BY
+      A.ymd, A.Tme
+  </select>
+
+  <!--증상-->
+  <select id="ConvertChart.ConvertTMdSympt_Ch_Present">
+    SELECT 
+      *
+    FROM NIXPEN$YYYY$.dbo.Ch_Present$YYMM$
+  </select>
+
+  <select id="ConvertChart.ConvertTMdSympt">
+    SELECT
+      ChtNo
+      , Ymd
+      , Tx
+    FROM NIXPEN.dbo.Symptom
+    WHERE YMD LIKE  '$YYYY$%'
+    ORDER BY Ymd
+  </select>
+
+  <!--진단-->
+  <select id="ConvertChart.ConvertTMdDx">
+    SELECT 
+      *
+    FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YYMM$
+    ORDER BY
+      Ymd
+  </select>
+  
+  
+
+  <!--처방-->
+  <select id="ConvertChart.ConvertTMdPsb">
+    SELECT 
+    A.*
+    , ISNULL(M.TJCode, '') AS TJCode
+    , ISNULL(M.Memo, '') AS Memo
+    FROM NIXPEN$YYYY$.dbo.Ch_Slip$YYMM$ A
+    LEFT JOIN
+    (
+      SELECT ChtNo, Ymd, A.TJCode,  STUFF((
+        SELECT ',' + Memo
+        FROM NIXPEN$YYYY$.dbo.Ch_SlipMemo$YYYY$
+        WHERE ChtNo = A.ChtNo AND Ymd = A.Ymd
+        FOR XML PATH(''), type
+    ).value('.', 'nvarchar(max)')
+    , 1, 2, '') As Memo
+    FROM NIXPEN$YYYY$.dbo.Ch_SlipMemo$YYYY$ A
+    GROUP BY ChtNo, Ymd, TJCode
+    ) M ON A.Code = M.ChtNo AND A.Ymd = M.Ymd
+    ORDER BY A.[Key]
+  </select>
+
+  <!-- 접수시 의사면허번호 조회-->
+  <select id="ConvertChart.retrieveUserId">
+    SELECT TOP 1
+      license
+    FROM NIXPEN$YYYY$.dbo.Ch_DisDay$YYMM$
+    WHERE
+      Ymd = {ymd}
+      AND Code = {code}
+  </select>
+  
+</root>

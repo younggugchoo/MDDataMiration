@@ -97,7 +97,21 @@ namespace MD_DataMigration.Data
                 }
                 catch (Exception ex)
                 {
-                    Logger.Logger.DEBUG(ex.Message, ex);
+                    Logger.Logger.ERROR(dbCommand.CommandText);
+                    if (paramValues != null)
+                    {
+                        StringBuilder sbParam = new StringBuilder();
+                        sbParam.AppendFormat("parameters:");
+                        foreach (IDbDataParameter p in paramValues)
+                        {
+                            sbParam.AppendFormat("{0}->{1},", p.ParameterName, p.Value);
+                        }
+
+                        sbParam.ToString().Remove(sbParam.ToString().Length - 1);
+                        Logger.Logger.ERROR(sbParam.ToString());
+                    }
+
+                    Logger.Logger.ERROR(ex.Message, ex);
                     throw ex;
                 }
                 
@@ -167,6 +181,9 @@ namespace MD_DataMigration.Data
         public int ExecuteNonQuery(string commandText, params   IDbDataParameter[] paramValues)
         {
             if (connection == null) throw new ArgumentException("connection");
+
+            if (connection.State != ConnectionState.Open) connection.Open();
+
             using (DbCommand dbCommand = CraeteCommand())
             {
                 int ret = 0;
@@ -187,7 +204,21 @@ namespace MD_DataMigration.Data
                 }
                 catch (Exception ex)
                 {
-                    Logger.Logger.DEBUG(ex.Message, ex);
+                    Logger.Logger.ERROR(dbCommand.CommandText);
+                    if (paramValues != null)
+                    {
+                        StringBuilder sbParam = new StringBuilder();
+                        sbParam.AppendFormat("parameters:");
+                        foreach (IDbDataParameter p in paramValues)
+                        {
+                            sbParam.AppendFormat("{0}->{1},", p.ParameterName, p.Value);
+                        }
+
+                        sbParam.ToString().Remove(sbParam.ToString().Length - 1);
+                        Logger.Logger.ERROR(sbParam.ToString());
+                    }
+
+                    Logger.Logger.ERROR(ex.Message, ex);
                     throw ex;
                     return 0;
                 }
@@ -197,6 +228,9 @@ namespace MD_DataMigration.Data
 
         public int ExecuteNonQuery(MySqlConnection conn, string commandText, params IDbDataParameter[] paramValues)
         {
+
+            if (conn.State != ConnectionState.Open) conn.Open();
+
             using (DbCommand dbCommand = conn.CreateCommand())
             {
                 int ret = 0;
@@ -217,7 +251,21 @@ namespace MD_DataMigration.Data
                 }
                 catch (Exception ex)
                 {
-                    Logger.Logger.DEBUG(ex.Message, ex);
+                    Logger.Logger.ERROR(dbCommand.CommandText);
+                    if (paramValues != null)
+                    {
+                        StringBuilder sbParam = new StringBuilder();
+                        sbParam.AppendFormat("parameters:");
+                        foreach (IDbDataParameter p in paramValues)
+                        {
+                            sbParam.AppendFormat("{0}->{1},", p.ParameterName, p.Value);
+                        }
+
+                        sbParam.ToString().Remove(sbParam.ToString().Length - 1);
+                        Logger.Logger.ERROR(sbParam.ToString());
+                    }
+
+                    Logger.Logger.ERROR(ex.Message, ex);
                     throw ex;
                     return 0;
                 }

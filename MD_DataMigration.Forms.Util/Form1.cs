@@ -132,7 +132,7 @@ namespace MD_DataMigration.Forms.Util
 
         private void button6_Click(object sender, EventArgs e)
         {
-            using (MDPARKService service = new MDPARKService("MariaDbMDPark"))
+            using (MDPARKService service = new MDPARKService())
             {
                 StringBuilder sb = new StringBuilder();
 
@@ -157,7 +157,7 @@ namespace MD_DataMigration.Forms.Util
 
         private void button7_Click(object sender, EventArgs e)
         {
-            using (MDPARKService service = new MDPARKService("MariaDbMDPark"))
+            using (MDPARKService service = new MDPARKService())
             {
 
 

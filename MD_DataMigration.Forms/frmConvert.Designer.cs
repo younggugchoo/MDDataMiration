@@ -36,7 +36,17 @@
             this.btnPrev = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.txtDescription = new System.Windows.Forms.TextBox();
+            this.tabConfig = new System.Windows.Forms.TabControl();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.label24 = new System.Windows.Forms.Label();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.cboNixEndYear = new System.Windows.Forms.ComboBox();
+            this.cboNixStartYear = new System.Windows.Forms.ComboBox();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.label26 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.rad3 = new System.Windows.Forms.RadioButton();
             this.rad2 = new System.Windows.Forms.RadioButton();
@@ -96,9 +106,17 @@
             this.lstFailList = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.cboUisarangEndYear = new System.Windows.Forms.ComboBox();
+            this.cboUisarangStartYear = new System.Windows.Forms.ComboBox();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
             this.panel4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabConfig.SuspendLayout();
+            this.tabPage6.SuspendLayout();
+            this.tabPage7.SuspendLayout();
+            this.tabPage8.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -187,7 +205,7 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.txtDescription);
+            this.tabPage1.Controls.Add(this.tabConfig);
             this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.rad3);
             this.tabPage1.Controls.Add(this.rad2);
@@ -200,20 +218,122 @@
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // txtDescription
+            // tabConfig
             // 
-            this.txtDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtDescription.Font = new System.Drawing.Font("맑은 고딕", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.txtDescription.Location = new System.Drawing.Point(172, 55);
-            this.txtDescription.Multiline = true;
-            this.txtDescription.Name = "txtDescription";
-            this.txtDescription.ReadOnly = true;
-            this.txtDescription.Size = new System.Drawing.Size(536, 493);
-            this.txtDescription.TabIndex = 21;
-            this.txtDescription.Text = "설명 및 체크사항";
+            this.tabConfig.Controls.Add(this.tabPage6);
+            this.tabConfig.Controls.Add(this.tabPage7);
+            this.tabConfig.Controls.Add(this.tabPage8);
+            this.tabConfig.Location = new System.Drawing.Point(166, 40);
+            this.tabConfig.Name = "tabConfig";
+            this.tabConfig.SelectedIndex = 0;
+            this.tabConfig.Size = new System.Drawing.Size(541, 522);
+            this.tabConfig.TabIndex = 23;
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage6.Controls.Add(this.label24);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(533, 496);
+            this.tabPage6.TabIndex = 0;
+            this.tabPage6.Text = "tabPage6";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(15, 15);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(237, 12);
+            this.label24.TabIndex = 0;
+            this.label24.Text = "병원과 컴퓨터 프로그램에서 데이터를 변환";
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage7.Controls.Add(this.cboNixEndYear);
+            this.tabPage7.Controls.Add(this.cboNixStartYear);
+            this.tabPage7.Controls.Add(this.label28);
+            this.tabPage7.Controls.Add(this.label27);
+            this.tabPage7.Controls.Add(this.label25);
+            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(533, 496);
+            this.tabPage7.TabIndex = 1;
+            this.tabPage7.Text = "tabPage7";
+            // 
+            // cboNixEndYear
+            // 
+            this.cboNixEndYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboNixEndYear.FormattingEnabled = true;
+            this.cboNixEndYear.Location = new System.Drawing.Point(184, 43);
+            this.cboNixEndYear.Name = "cboNixEndYear";
+            this.cboNixEndYear.Size = new System.Drawing.Size(70, 20);
+            this.cboNixEndYear.TabIndex = 2;
+            this.cboNixEndYear.SelectedIndexChanged += new System.EventHandler(this.cboNixEndYear_SelectedIndexChanged);
+            // 
+            // cboNixStartYear
+            // 
+            this.cboNixStartYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboNixStartYear.FormattingEnabled = true;
+            this.cboNixStartYear.Location = new System.Drawing.Point(89, 43);
+            this.cboNixStartYear.Name = "cboNixStartYear";
+            this.cboNixStartYear.Size = new System.Drawing.Size(70, 20);
+            this.cboNixStartYear.TabIndex = 2;
+            this.cboNixStartYear.SelectedIndexChanged += new System.EventHandler(this.cboNixStartYear_SelectedIndexChanged);
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(165, 48);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(14, 12);
+            this.label28.TabIndex = 1;
+            this.label28.Text = "~";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(15, 46);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(53, 12);
+            this.label27.TabIndex = 1;
+            this.label27.Text = "변환년도";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(15, 15);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(185, 12);
+            this.label25.TabIndex = 1;
+            this.label25.Text = "닉스 프로그램에서 데이터를 변환";
+            // 
+            // tabPage8
+            // 
+            this.tabPage8.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage8.Controls.Add(this.cboUisarangEndYear);
+            this.tabPage8.Controls.Add(this.cboUisarangStartYear);
+            this.tabPage8.Controls.Add(this.label29);
+            this.tabPage8.Controls.Add(this.label30);
+            this.tabPage8.Controls.Add(this.label26);
+            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage8.Size = new System.Drawing.Size(533, 496);
+            this.tabPage8.TabIndex = 2;
+            this.tabPage8.Text = "tabPage8";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(15, 15);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(197, 12);
+            this.label26.TabIndex = 1;
+            this.label26.Text = "의사랑 프로그램에서 데이터를 변환";
             // 
             // label7
             // 
@@ -614,7 +734,7 @@
             this.txtHosCd.Name = "txtHosCd";
             this.txtHosCd.Size = new System.Drawing.Size(199, 23);
             this.txtHosCd.TabIndex = 27;
-            this.txtHosCd.Text = "A0101";
+            this.txtHosCd.Text = "R0102";
             // 
             // label2
             // 
@@ -838,6 +958,44 @@
             this.txtLog.Size = new System.Drawing.Size(700, 192);
             this.txtLog.TabIndex = 18;
             // 
+            // cboUisarangEndYear
+            // 
+            this.cboUisarangEndYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUisarangEndYear.FormattingEnabled = true;
+            this.cboUisarangEndYear.Location = new System.Drawing.Point(184, 44);
+            this.cboUisarangEndYear.Name = "cboUisarangEndYear";
+            this.cboUisarangEndYear.Size = new System.Drawing.Size(70, 20);
+            this.cboUisarangEndYear.TabIndex = 6;
+            this.cboUisarangEndYear.SelectedIndexChanged += new System.EventHandler(this.cboUisarangEndYear_SelectedIndexChanged);
+            // 
+            // cboUisarangStartYear
+            // 
+            this.cboUisarangStartYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUisarangStartYear.FormattingEnabled = true;
+            this.cboUisarangStartYear.Location = new System.Drawing.Point(89, 44);
+            this.cboUisarangStartYear.Name = "cboUisarangStartYear";
+            this.cboUisarangStartYear.Size = new System.Drawing.Size(70, 20);
+            this.cboUisarangStartYear.TabIndex = 7;
+            this.cboUisarangStartYear.SelectedIndexChanged += new System.EventHandler(this.cboUisarangStartYear_SelectedIndexChanged);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(165, 49);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(14, 12);
+            this.label29.TabIndex = 3;
+            this.label29.Text = "~";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(15, 47);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(53, 12);
+            this.label30.TabIndex = 4;
+            this.label30.Text = "변환년도";
+            // 
             // frmConvert
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -853,6 +1011,13 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabConfig.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
+            this.tabPage6.PerformLayout();
+            this.tabPage7.ResumeLayout(false);
+            this.tabPage7.PerformLayout();
+            this.tabPage8.ResumeLayout(false);
+            this.tabPage8.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
@@ -894,7 +1059,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.Button btnConvert;
-        private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.ListBox lstFailList;
@@ -937,5 +1101,20 @@
         private System.Windows.Forms.ColumnHeader workName;
         private System.Windows.Forms.ListBox lstWorkInfo;
         private System.Windows.Forms.ColumnHeader progress;
+        private System.Windows.Forms.TabControl tabConfig;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.TabPage tabPage8;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.ComboBox cboNixEndYear;
+        private System.Windows.Forms.ComboBox cboNixStartYear;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.ComboBox cboUisarangEndYear;
+        private System.Windows.Forms.ComboBox cboUisarangStartYear;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label label30;
     }
 }

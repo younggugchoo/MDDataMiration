@@ -17,5 +17,15 @@ namespace MD_DataMigration.Service
         public string HosCd { get; set; }
 
         public string HosName { get; set; }
+
+
+
+        public bool DeletePrevData { get; set; }
+
+
+        public int StartYear { get; set; }
+        public int EndYear { get; set; }
+
+        public List<string> ConvertItems { get; set; }
     }
 }

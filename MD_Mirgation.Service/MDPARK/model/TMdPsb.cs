@@ -20,7 +20,7 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 처방 명: 심평원 코드가 갑자기 사라질 수 있어 이름까지 관리함.
 		/// </summary>
-		public string PsbNm {get; set;}
+		//public string PsbNm {get; set;}
 
 		/// <summary>
 		/// 처방이 어떤 table인지 구분-. 심평원 약가 혹은 수가 어느쪽에서 가져오는지 구분함.(M:수가,  D;약가   Z:재료)
@@ -40,17 +40,17 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 용량
 		/// </summary>
-		public string Dose {get; set;}
+		public string Qd {get; set;}
 
 		/// <summary>
 		/// 일일 투여횟수
 		/// </summary>
-		public string DayCnt {get; set;}
+		public string Sd {get; set;}
 
 		/// <summary>
 		/// 투여일수
 		/// </summary>
-		public string Duration {get; set;}
+		public string Td {get; set;}
 
 		/// <summary>
 		/// 원내 원외 구분IN_OUT_GB

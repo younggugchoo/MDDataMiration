@@ -99,5 +99,72 @@ namespace MD_DataMigration.Service
                 return null;
             }
         }
+
+        public static List<T> ToList<T>(this DataTable table) where T : new()
+        {
+            IList<PropertyInfo> properties = typeof(T).GetProperties().ToList();
+            List<T> result = new List<T>();
+
+            foreach (var row in table.Rows)
+            {
+                var item = CreateItemFromRow<T>((DataRow)row, properties);
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        private static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
+        {
+            T item = new T();
+            foreach (var property in properties)
+            {
+                if (property.PropertyType == typeof(System.DayOfWeek))
+                {
+                    DayOfWeek day = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), row[property.Name].ToString());
+                    property.SetValue(item, day, null);
+                }
+                else
+                {
+                    if (row[property.Name] == DBNull.Value)
+                        property.SetValue(item, null, null);
+                    else
+                        property.SetValue(item, row[property.Name], null);
+                }
+            }
+            return item;
+        }
+
+
+        public static string ToDateFormat(this Object value)
+        {
+
+            if (value == null) return "1990-01-01";
+            string str = "";
+            str = value.ToStringTrim();
+
+            str = str.Substring(0, 4) + "-" + str.Substring(4, 2) + "-" + str.Substring(6, 2);
+
+            return str;
+        }
+
+        public static string ToStringTrim (this Object value)
+        {
+            if (value == null) return "";
+            return value.ToString().Trim();
+        }
+
+        public static int ToInt32(this Object value)
+        {
+            int x = 0;
+
+            if (value == null) return 0;
+
+            Int32.TryParse(value.ToString(), out x) ;
+
+            return x;
+
+
+        }
     }
 }
