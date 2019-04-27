@@ -48,6 +48,10 @@ namespace MD_DataMigration.Service.NIX
             strSql = strSql.Replace("$YYYY$", strYear).Replace("$YYMM$", strYear.Substring(2, 2) + month);
 
             List<TMdPsb> lstTMdPsb = new List<TMdPsb>();
+
+            //줄단위 메모 데이터
+            List<TMdPsbLine> lstTMPsbLine = new List<TMdPsbLine>();
+
             int ptntId = 0;
             int rcvId = 0;
 
@@ -110,15 +114,15 @@ namespace MD_DataMigration.Service.NIX
 
                             viewGr = medi == null ? "" : ConvertViewGr(retrieveMediColumnValue(mdPsb.PsbCd, "Br1" + applyDateColNum.ToString(), medi).ToString());
 
-                            mdPsb.MGb = psbGb;
-                            mdPsb.ViewGr = viewGr;
+                            //mdPsb.MGb = psbGb;
+                            //mdPsb.ViewGr = viewGr;
 
                                 
 
                             mdPsb.HangNo = medi == null ? "" : retrieveMediColumnValue(mdPsb.PsbCd, "Br1" + applyDateColNum.ToString(), medi).ToStringTrim();
                             mdPsb.MoNo = "";  //dr["Br4" + applyDateColNum.ToString()].ToStringTrim();  //retrieveMedi(mdPsb.PsbCd).Br4.ToString(); //보류..확인중...
-                            mdPsb.CdGb = medi == null ? "" : ConvertCdGb(retrieveMediColumnValue(mdPsb.PsbCd, "Br4" + applyDateColNum.ToString(), medi).ToStringTrim());
-                            mdPsb.DrugUnit = medi == null? "":medi.Unit.ToStringTrim(); //약단위
+                            //mdPsb.CdGb = medi == null ? "" : ConvertCdGb(retrieveMediColumnValue(mdPsb.PsbCd, "Br4" + applyDateColNum.ToString(), medi).ToStringTrim());
+                            //mdPsb.DrugUnit = medi == null? "":medi.Unit.ToStringTrim(); //약단위
 
                             if (medi != null)
                             {
@@ -135,7 +139,7 @@ namespace MD_DataMigration.Service.NIX
                                 psbPrice = 0;
 
 
-                            mdPsb.PsbPrice = psbPrice.ToString(); 
+                           //mdPsb.PsbPrice = psbPrice.ToString(); 
 
                             mdPsb.Qd = dr["Yb" + i.ToString()].ToStringTrim();
                             mdPsb.Sd = dr["Dos" + i.ToString()].ToStringTrim();
@@ -147,7 +151,7 @@ namespace MD_DataMigration.Service.NIX
 
 
                             mdPsb.UnitPrice = "0"; //단가 (0으로  hardcode)
-                            mdPsb.Spec = ""; //스펙
+                            //mdPsb.Spec = ""; //스펙
 
                             
 
@@ -155,8 +159,29 @@ namespace MD_DataMigration.Service.NIX
                             mdPsb.ExamChkDt = ""; //검사 확인 일시
                             mdPsb.ExamChkUserId = ""; //검사 확인 사용자 ID
 
-                            mdPsb.LineCd = dr["TJCode"].ToStringTrim(); //줄단위 구분코드
-                            mdPsb.LineMmoTxt = dr["Memo"].ToStringTrim(); //줄단위 메모 txt
+
+                            if (!dr["TJCode"].ToStringTrim().Equals(""))
+                            {
+                                TMdPsbLine mdPsbLine = new TMdPsbLine();
+
+                                mdPsbLine.PsbCd = mdPsb.PsbCd;
+                                mdPsbLine.RcvId = mdPsb.RcvId;
+
+                                mdPsbLine.LineCd = dr["TJCode"].ToStringTrim();
+                                mdPsbLine.LineMmoTxt = dr["Memo"].ToStringTrim();
+
+                                mdPsbLine.InsDt = dr["Ymd"].ToString();
+                                mdPsbLine.InsId = "TRN";
+                                mdPsbLine.InsIp = "0.0.0.0";
+                                mdPsbLine.UpdDt = DateTime.Now.ToString();
+                                mdPsbLine.UpdId = "TRN";
+                                mdPsbLine.UpdIp = "0.0.0.0";
+                                mdPsbLine.UseYn = "Y";
+
+                                lstTMPsbLine.Add(mdPsbLine);
+                            }
+                            //mdPsb.LineCd = dr["TJCode"].ToStringTrim(); //줄단위 구분코드
+                            //mdPsb.LineMmoTxt = dr["Memo"].ToStringTrim(); //줄단위 메모 txt
 
                             mdPsb.InsDt = dr["Ymd"].ToString();
                             mdPsb.InsId = "TRN";
@@ -174,6 +199,20 @@ namespace MD_DataMigration.Service.NIX
                 }
 
                 mdParkService.ExecuteInsertData(lstTMdPsb);
+
+                //줄단위 메모데이터 처리
+                foreach (TMdPsbLine item in lstTMPsbLine)
+                {
+                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd);
+
+                    if (item.PsbId == 0)
+                    {
+                        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("접수번호 : {0} 가 psb_id 정보에 존재하지 않음. 처방코드={1} ", item.RcvId, item.PsbCd));
+                        Logger.Logger.INFO(string.Format("접수번호 : {0} 가 psb_id 정보에 존재하지 않음. 처방코드={1} ", item.RcvId, item.PsbCd));
+                    }
+                }
+
+                mdParkService.ExecuteInsertData(lstTMPsbLine);
 
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "ConvertTMdPsb"));
             }

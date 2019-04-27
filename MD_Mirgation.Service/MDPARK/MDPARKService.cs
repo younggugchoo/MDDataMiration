@@ -32,6 +32,8 @@ namespace MD_DataMigration.Service.MDPARK
 
         public DataTable dtTMnRcv { get; set; }
 
+        public DataTable dtTMnRcvPsb { get; set; }
+
         public MDPARKService()
         {
             //if (!value.Equals(""))
@@ -510,7 +512,44 @@ namespace MD_DataMigration.Service.MDPARK
 
         }
 
+        /// <summary>
+        /// 처방번호 조회
+        /// </summary>
+        /// <param name="ptntId"></param>
+        /// <param name="oldRcvNo"></param>
+        /// <returns></returns>
+        public int GetPsbId(int rcvId, string psbCd)
+        {
+            int psbId = 0;
 
+            string sql = "";
+            if (dtTMnRcvPsb == null)
+            {
+                sql = string.Format(
+                    "SELECT " +
+                    "   a.rcv_id, b.psb_id, b.psb_cd " +
+                    " FROM t_mn_rcv a" +
+                    " join t_md_psb b on a.rcv_id = b.rcv_id" +
+                    " WHERE a.hos_cd='{0}' ", GetBaseInfo.HosCd);
+
+                using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+                {
+                    dtTMnRcvPsb = factory.ExecuteDataSet(sql).Tables[0];
+                }
+            }
+
+            try
+            {
+                DataTable dt2 = dtTMnRcvPsb.Select(string.Format("(rcv_id = {0}) AND (psb_cd = '{1}')", rcvId.ToString(), psbCd)).CopyToDataTable();
+                psbId = Convert.ToInt32(dt2.Rows[0]["psb_id"]);
+            }
+            catch
+            {
+
+            }
+
+            return psbId;
+        }
 
         #endregion 병컴 데이터 변환 관련 함수
 

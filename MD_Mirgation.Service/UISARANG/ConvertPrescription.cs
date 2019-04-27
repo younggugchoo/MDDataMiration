@@ -52,7 +52,11 @@ namespace MD_DataMigration.Service.UISARANG
 
                 List<SUTAKCODEO> sUTAKCODEOs = Parser.ConvertParserData<SUTAKCODEO>(filePath);
 
+                //처방데이터
                 List<TMdPsb> lstTMdPsb = new List<TMdPsb>();
+
+                //줄단위 메모 데이터
+                List<TMdPsbLine> lstTMPsbLine = new List<TMdPsbLine>();
 
                 if (jSOs == null)
                 {
@@ -123,6 +127,7 @@ namespace MD_DataMigration.Service.UISARANG
                         }
 
                         TMdPsb mdPsb = new TMdPsb();
+                        
 
                         mdPsb.RcvId = rcvId;
 
@@ -131,15 +136,15 @@ namespace MD_DataMigration.Service.UISARANG
 
                         //SUGACODE sUGACODE = retrieveSUGACODE(tro.trcode);
 
-                        mdPsb.MGb = ConvertMGb(tro.cdgubun); //(1:M , 3:D, 8:Z, 4:확인중)
-                        mdPsb.ViewGr = ConvertViewGr(tro.item); //(item 앞2자리 => 04:I, 03:M, 09:C)
+                        //mdPsb.MGb = ConvertMGb(tro.cdgubun); //(1:M , 3:D, 8:Z, 4:확인중)
+                        //mdPsb.ViewGr = ConvertViewGr(tro.item); //(item 앞2자리 => 04:I, 03:M, 09:C)
 
                         mdPsb.HangNo = tro.item.Substring(0, 2); //11 이후의 값이 존재함 -> 확인필요
                         mdPsb.MoNo = tro.item.Substring(2, 2);
-                        mdPsb.CdGb = tro.cdgubun;
-                        mdPsb.DrugUnit = tro.sepsymbol;
+                        //mdPsb.CdGb = tro.cdgubun;
+                        //mdPsb.DrugUnit = tro.sepsymbol;
 
-                        mdPsb.PsbPrice = tro.cgsuga;
+                        //mdPsb.PsbPrice = tro.cgsuga;
 
                         mdPsb.Qd = ""; //정의필요
                         mdPsb.Sd = tro.trdose;
@@ -150,7 +155,7 @@ namespace MD_DataMigration.Service.UISARANG
                         mdPsb.SalGb = "";
 
                         mdPsb.UnitPrice = "0"; //단가 (0으로  hardcode)
-                        mdPsb.Spec = ""; //스펙
+                        //mdPsb.Spec = ""; //스펙
 
                         mdPsb.ExamChkYn = ""; //검사 확인여부
                         mdPsb.ExamChkDt = ""; //검사 확인 일시
@@ -162,17 +167,33 @@ namespace MD_DataMigration.Service.UISARANG
                          * SUTAKCODEOYYYY.JTRCM 컬럼의 값이 있을 경우에만 줄단위 데이터 이관
                          */
 
-                        sutakcodeo = sUTAKCODEOs.FirstOrDefault(x => x.wno == tro.wno && x.ono == tro.ono);
+                        //sutakcodeo = sUTAKCODEOs.FirstOrDefault(x => x.wno == tro.wno && x.ono == tro.ono);
 
-                        mdPsb.LineCd = ""; //줄단위 구분코드
-                        mdPsb.LineMmoTxt = ""; //줄단위 메모 txt
+                        //mdPsb.LineCd = ""; //줄단위 구분코드
+                        //mdPsb.LineMmoTxt = ""; //줄단위 메모 txt
 
                         if (sutakcodeo != null)
                         {
                             if (!string.IsNullOrEmpty(sutakcodeo.jtrcm))
                             {
-                                mdPsb.LineCd = sutakcodeo.jtrcm.Substring(0, 5);
-                                mdPsb.LineMmoTxt = sutakcodeo.jtrcm.Substring(5, sutakcodeo.jtrcm.Length-5);
+                                TMdPsbLine mdPsbLine = new TMdPsbLine();
+
+                                mdPsbLine.PsbCd = mdPsb.PsbCd;
+                                mdPsbLine.RcvId = mdPsb.RcvId;
+
+                                mdPsbLine.LineCd = sutakcodeo.jtrcm.Substring(0, 5);
+                                mdPsbLine.LineMmoTxt = sutakcodeo.jtrcm.Substring(5, sutakcodeo.jtrcm.Length - 5);
+
+                                mdPsbLine.InsDt = string.Format("{0} {1}", jso.jsdate, jso.jstime);
+                                mdPsbLine.InsId = "TRN";
+                                mdPsbLine.InsIp = "0.0.0.0";
+                                mdPsbLine.UpdDt = DateTime.Now.ToString();
+                                mdPsbLine.UpdId = "TRN";
+                                mdPsbLine.UpdIp = "0.0.0.0";
+                                mdPsbLine.UseYn = "Y";
+
+                                lstTMPsbLine.Add(mdPsbLine);
+                     
                             }
                         }
 
@@ -190,6 +211,20 @@ namespace MD_DataMigration.Service.UISARANG
                 }
 
                 mdParkService.ExecuteInsertData(lstTMdPsb);
+
+                //줄단위 메모데이터 처리
+                foreach (TMdPsbLine item in lstTMPsbLine)
+                {
+                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd);
+
+                    if (item.PsbId == 0)
+                    {
+                        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("접수번호 : {0} 가 psb_id 정보에 존재하지 않음. 처방코드={1} ", item.RcvId, item.PsbCd));
+                        Logger.Logger.INFO(string.Format("접수번호 : {0} 가 psb_id 정보에 존재하지 않음. 처방코드={1} ", item.RcvId, item.PsbCd));
+                    }
+                }
+
+                mdParkService.ExecuteInsertData(lstTMPsbLine);
 
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "ConvertTMdPsb"));
             }

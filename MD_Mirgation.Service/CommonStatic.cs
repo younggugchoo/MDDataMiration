@@ -148,6 +148,11 @@ namespace MD_DataMigration.Service
             return str;
         }
 
+        public static string ToDateFormatNonDash(this Object value)
+        {
+            return value.ToString().Replace("-", "");
+        }
+
         public static string ToStringTrim (this Object value)
         {
             if (value == null) return "";
@@ -166,5 +171,13 @@ namespace MD_DataMigration.Service
 
 
         }
+
+        public static string Reverse(this Object s)
+        {
+            char[] charArray = s.ToString().ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
+        }
+
     }
 }

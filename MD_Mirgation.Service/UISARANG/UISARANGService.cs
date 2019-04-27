@@ -132,13 +132,28 @@ namespace MD_DataMigration.Service.UISARANG
                 }
             }
 
-            
+            //사용자지정 수가
+            workItem = baseInfo.ConvertItems.FirstOrDefault(x => x == "TCmBsHosSet");
+
+            if (workItem != null)
+            {
+                using (ConvertSugaCode convertSugacode = new ConvertSugaCode(mdParkService))
+                {
+                    convertSugacode.ConvertData();
+                }
+            }
+
+
             for (int i = baseInfo.StartYear; i < baseInfo.EndYear + 1; i++)
             {
                 try
                 {
                     //MD 접수데이터 초기화
                     mdParkService.dtTMnRcv = null;
+
+                    //MD 처방데이터 초기화
+                    mdParkService.dtTMnRcvPsb = null;
+
                     //접수
                     List<JSO> jsos = null;
 
@@ -176,7 +191,7 @@ namespace MD_DataMigration.Service.UISARANG
                         }
                     }
 
-                    //처방
+                    //처방 (줄단위 메모 포함)
                     workItem = baseInfo.ConvertItems.FirstOrDefault(x => x == "TMdPsb");
 
                     if (workItem != null)

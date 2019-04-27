@@ -155,6 +155,40 @@ namespace MD_DataMigration.Forms.Util
             }
         }
 
+        private void button11_Click(object sender, EventArgs e)
+        {
+            using (MDPARKService service = new MDPARKService())
+            {
+                StringBuilder sb = new StringBuilder();
+
+                DataSet ds = service.SelectColumnList(txtTableName.Text);
+
+               
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    string dataType = ConvertDataType(dr["data_type"].ToString());
+
+
+                    if (dataType == "decimal" || dataType == "int")
+                    {
+                        sb.Append(string.Format("{0}.{1}={2};", txtTableName.Text, ToPascalCase(dr["column_name"].ToString()), "0"));
+                    }
+
+                    else
+                    {
+                        sb.Append(string.Format("{0}.{1}={2};", txtTableName.Text, ToPascalCase(dr["column_name"].ToString()), "\"\""));
+
+                    }
+                    
+                    sb.AppendLine();
+                    //Logger.Logger.DEBUG(dr["column_name"].ToString());
+                }
+
+                txtResult.Text = sb.ToString();
+
+            }
+        }
+
         private void button7_Click(object sender, EventArgs e)
         {
             using (MDPARKService service = new MDPARKService())
@@ -585,5 +619,7 @@ namespace MD_DataMigration.Forms.Util
             f.Show();
 
         }
+
+        
     }
 }

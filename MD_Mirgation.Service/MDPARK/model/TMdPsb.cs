@@ -25,17 +25,17 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 처방이 어떤 table인지 구분-. 심평원 약가 혹은 수가 어느쪽에서 가져오는지 구분함.(M:수가,  D;약가   Z:재료)
 		/// </summary>
-		public string MGb {get; set;}
+		//public string MGb {get; set;}
 
 		/// <summary>
 		/// 처방 그룹 : 과거차트에서 그룹별로 보여주는 용도로 사용함.( 주사:I, 검사:C, 내복:M)
 		/// </summary>
-		public string ViewGr {get; set;}
+		//public string ViewGr {get; set;}
 
 		/// <summary>
 		/// 처방금액
 		/// </summary>
-		public string PsbPrice {get; set;}
+		//public string PsbPrice {get; set;}
 
 		/// <summary>
 		/// 용량
@@ -75,7 +75,7 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 1: 수가(상대가치점수표에 수록된 코드)2: 준용수가3: 보험등재약(“약제 급여 목록 및 급여 상한금액표”에수록된 코드)4: 원료약, 요양기관 자체 조제(제제)약8: 치료재료
 		/// </summary>
-		public string CdGb {get; set;}
+		//public string CdGb {get; set;}
 
 		/// <summary>
 		/// 
@@ -85,12 +85,12 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 약의 spec : 몇개 단위인지 표현
 		/// </summary>
-		public string Spec {get; set;}
+		//public string Spec {get; set;}
 
 		/// <summary>
 		/// 약의 단위 : 정,  mL/병 등.
 		/// </summary>
-		public string DrugUnit {get; set;}
+		//public string DrugUnit {get; set;}
 
 		/// <summary>
 		/// 검사 확인여부 : 검사처방일 경우 의사가 확인여부
@@ -145,12 +145,12 @@ namespace MD_DataMigration.Service.MDPARK.model
 		/// <summary>
 		/// 
 		/// </summary>
-		public string LineMmoTxt {get; set;}
+		//public string LineMmoTxt {get; set;}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public string LineCd {get; set;}
+		//public string LineCd {get; set;}
 
 	 }
 }

@@ -437,6 +437,9 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 List<TMdPsb> lstTMdPsb = new List<TMdPsb>();
 
+                //줄단위 메모 데이터
+                List<TMdPsbLine> lstTMPsbLine = new List<TMdPsbLine>();
+
                 #region select
                 factory.DatabaseFactoryAccess(tDbFileName, prefixName);
 
@@ -512,10 +515,10 @@ namespace MD_DataMigration.Service.BYEONGCOM
                             break;
                     }
 
-                    mdPsb.MGb = psbGb;
-                    mdPsb.ViewGr = viewGr;
+                    //mdPsb.MGb = psbGb;
+                    //mdPsb.ViewGr = viewGr;
 
-                    mdPsb.PsbPrice = "";
+                    //mdPsb.PsbPrice = "";
 
                     mdPsb.Qd = dr["용량"].ToString();
                     mdPsb.Sd = dr["일투"].ToString();
@@ -529,23 +532,44 @@ namespace MD_DataMigration.Service.BYEONGCOM
                     {
                         mdPsb.HangNo = dr["항"].ToString();
                         mdPsb.MoNo = dr["목"].ToString();
-                        mdPsb.CdGb = dr["코드구분"].ToString();
+                        //mdPsb.CdGb = dr["코드구분"].ToString();
                     }
                     
                     mdPsb.UnitPrice = "0"; //단가
-                    mdPsb.Spec = ""; //스펙
+                    //mdPsb.Spec = ""; //스펙
                     
                     if (prefixName.Equals("처방전"))
                     {
-                        mdPsb.DrugUnit = ""; //약단위
+                        //mdPsb.DrugUnit = ""; //약단위
                     }
 
                     mdPsb.ExamChkYn = ""; //검사 확인여부
                     mdPsb.ExamChkDt = ""; //검사 확인 일시
                     mdPsb.ExamChkUserId = ""; //검사 확인 사용자 ID
 
-                    mdPsb.LineCd = dr["내역코드"].ToString().Equals("")? null: dr["내역코드"].ToString(); //줄단위 구분코드
-                    mdPsb.LineMmoTxt = dr["내역"].ToString().Equals("")? null: dr["내역"].ToString(); //줄단위 메모 txt
+                    //mdPsb.LineCd = dr["내역코드"].ToString().Equals("")? null: dr["내역코드"].ToString(); //줄단위 구분코드
+                    //mdPsb.LineMmoTxt = dr["내역"].ToString().Equals("")? null: dr["내역"].ToString(); //줄단위 메모 txt
+
+                    if (!dr["내역코드"].ToString().Equals(""))
+                    {
+                        TMdPsbLine mdPsbLine = new TMdPsbLine();
+
+                        mdPsbLine.PsbCd = mdPsb.PsbCd;
+                        mdPsbLine.RcvId = mdPsb.RcvId;
+
+                        mdPsbLine.LineCd = dr["내역코드"].ToString();
+                        mdPsbLine.LineMmoTxt = dr["내역"].ToString();
+
+                        mdPsbLine.InsDt = dr["Ymd"].ToString();
+                        mdPsbLine.InsId = "TRN";
+                        mdPsbLine.InsIp = "0.0.0.0";
+                        mdPsbLine.UpdDt = DateTime.Now.ToString();
+                        mdPsbLine.UpdId = "TRN";
+                        mdPsbLine.UpdIp = "0.0.0.0";
+                        mdPsbLine.UseYn = "Y";
+
+                        lstTMPsbLine.Add(mdPsbLine);
+                    }
 
                     mdPsb.InsDt = dr[dateName].ToString();
                     mdPsb.InsId = "TRN";
@@ -562,6 +586,20 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 #endregion
 
                 mdParkService.ExecuteInsertData(lstTMdPsb);
+
+                //줄단위 메모데이터 처리
+                foreach (TMdPsbLine item in lstTMPsbLine)
+                {
+                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd);
+
+                    if (item.PsbId == 0)
+                    {
+                        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("접수번호 : {0} 가 psb_id 정보에 존재하지 않음. 처방코드={1} ", item.RcvId, item.PsbCd));
+                        Logger.Logger.INFO(string.Format("접수번호 : {0} 가 psb_id 정보에 존재하지 않음. 처방코드={1} ", item.RcvId, item.PsbCd));
+                    }
+                }
+
+                mdParkService.ExecuteInsertData(lstTMPsbLine);
 
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "처방" + tDbFileName));
 

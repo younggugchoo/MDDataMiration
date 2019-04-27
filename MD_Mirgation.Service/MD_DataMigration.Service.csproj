@@ -89,6 +89,7 @@
     <Compile Include="MDPARK\model\TAcSearchHist.cs" />
     <Compile Include="MDPARK\model\TAcSujinHist.cs" />
     <Compile Include="MDPARK\model\TAllergy.cs" />
+    <Compile Include="MDPARK\model\TCmBsHosSet.cs" />
     <Compile Include="MDPARK\model\TCmLookup.cs" />
     <Compile Include="MDPARK\model\TCmMsg.cs" />
     <Compile Include="MDPARK\model\TCmMsgGrp.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="MDPARK\model\TMdPdInjDc.cs" />
     <Compile Include="MDPARK\model\TMdPsb.cs" />
     <Compile Include="MDPARK\model\TMdPsbExamMst.cs" />
+    <Compile Include="MDPARK\model\TMdPsbLine.cs" />
     <Compile Include="MDPARK\model\TMdPsdMmo.cs" />
     <Compile Include="MDPARK\model\TMdPta.cs" />
     <Compile Include="MDPARK\model\TMdPtaSet.cs" />
@@ -181,6 +183,7 @@
     <Compile Include="UISARANG\ConvertPatient.cs" />
     <Compile Include="UISARANG\ConvertPrescription.cs" />
     <Compile Include="UISARANG\ConvertReceipt.cs" />
+    <Compile Include="UISARANG\ConvertSugaCode.cs" />
     <Compile Include="UISARANG\ConvertSymptom.cs" />
     <Compile Include="UISARANG\Model\DISO.cs" />
     <Compile Include="UISARANG\Model\EXAMCODE.cs" />
@@ -190,6 +193,7 @@
     <Compile Include="UISARANG\Model\SUGACODE.cs" />
     <Compile Include="UISARANG\Model\SUTAKCODEO.cs" />
     <Compile Include="UISARANG\Model\TRO.cs" />
+    <Compile Include="UISARANG\Model\YAKGALIB.cs" />
     <Compile Include="UISARANG\Parser.cs" />
     <Compile Include="UISARANG\UISARANGService.cs" />
   </ItemGroup>

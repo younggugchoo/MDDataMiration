@@ -373,7 +373,7 @@ namespace MD_DataMigration.Forms
         {
 
         }
-
+                                    
         private void btnClose_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -437,7 +437,17 @@ namespace MD_DataMigration.Forms
             item.Tag = "TMdPsb";
             lstWorkList.Items.Add(item);
 
+            item = new ListViewItem();
+            item.SubItems.Add("수가");
+            item.SubItems.Add("");
+            item.Checked = false;
+            item.Tag = "TCmBsHosSet";
+            lstWorkList.Items.Add(item);
+
             
+
+
+
         }
 
         private void NixConfigInit()
