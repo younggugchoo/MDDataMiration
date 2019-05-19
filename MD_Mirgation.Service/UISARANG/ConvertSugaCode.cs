@@ -33,7 +33,7 @@ namespace MD_DataMigration.Service.UISARANG
         
         public void ConvertData()
         {
-            //ConvertTCmBsHosSet_Suga();
+            ConvertTCmBsHosSet_Suga();
 
             ConvertTCmBsHosSet_Exam();
         }

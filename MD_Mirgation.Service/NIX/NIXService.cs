@@ -66,8 +66,20 @@ namespace MD_DataMigration.Service.NIX
                 }
             }
 
+            //사용자지정 수가
+            workItem = baseInfo.ConvertItems.FirstOrDefault(x => x == "TCmBsHosSet");
 
-            
+            if (workItem != null)
+            {
+                using (ConvertSugaCode convertSugacode = new ConvertSugaCode(mdParkService))
+                {
+                    convertSugacode.ConvertData();
+                }
+            }
+
+
+
+
 
             for (int i = baseInfo.StartYear; i < baseInfo.EndYear + 1; i++)
             {
@@ -119,6 +131,8 @@ namespace MD_DataMigration.Service.NIX
                             convertPrescription.ConvertData(i);
                         }
                     }
+
+
                 }
 
                 

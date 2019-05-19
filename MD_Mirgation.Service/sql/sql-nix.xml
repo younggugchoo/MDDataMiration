@@ -247,5 +247,10 @@
       Ymd = {ymd}
       AND Code = {code}
   </select>
-  
+
+
+  <select id="ConvertSugaCode.retrieveMedi">
+    SELECT *
+    FROM Medi
+  </select>
 </root>
