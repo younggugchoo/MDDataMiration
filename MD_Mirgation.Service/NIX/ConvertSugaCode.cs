@@ -31,6 +31,9 @@ namespace MD_DataMigration.Service.NIX
             ConvertTCmBsHosSet();
         }
 
+        /// <summary>
+        /// NIX 수가코드 변환
+        /// </summary>
         private void ConvertTCmBsHosSet()
         {
             string strSql = ReadQuery.GetInstance(mdParkService.SourceSQLFile).GetQueryText(string.Format("ConvertSugaCode.retrieveMedi"));
@@ -69,15 +72,15 @@ namespace MD_DataMigration.Service.NIX
 
                                 cmBsHosSet.SalNoGb = "";
 
-                                cmBsHosSet.Kor = item.kname.ToStringTrim();
+                                cmBsHosSet.Kor = dr[string.Format("Nmk{0}", i)].ToString();
                                 cmBsHosSet.OvhdRateGb = "";
                                 cmBsHosSet.DSpec = "";
-                                cmBsHosSet.DUnit = item.unit;
-                                cmBsHosSet.DCompNm = item.mname;
+                                cmBsHosSet.DUnit = dr["Unit"].ToString();
+                                cmBsHosSet.DCompNm = dr[string.Format("comp{0}", i)].ToString();
                                 //cmBsHosSet.DstbNo = "";
 
-                                cmBsHosSet.DMainIgdt = ""; //retrieveDMainIgdt(item.cgcode);
-                                cmBsHosSet.DPsGb = "";
+                                cmBsHosSet.DMainIgdt = dr[string.Format("sungbun{0}", i)].ToString();
+                                cmBsHosSet.DPsGb = "";  
 
                                 //cmBsHosSet.MdcSalGb = "";
                                 cmBsHosSet.InOutGb = "O";
