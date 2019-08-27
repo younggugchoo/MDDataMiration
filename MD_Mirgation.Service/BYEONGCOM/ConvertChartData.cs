@@ -68,43 +68,64 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //ConvertTMnRcv( "챠트", Path.GetFileNameWithoutExtension(dbFile), "처방_접수");
             //}
 
-            //증상
-            foreach (string dbFile in orderChartFiles)
+
+            string workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TMdSympt");
+
+            if (workItem != null)
             {
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
-                ConvertTMdSympt("챠트", Path.GetFileNameWithoutExtension(dbFile), "처방_증상");
+                //증상
+                foreach (string dbFile in orderChartFiles)
+                {
+                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
+                    ConvertTMdSympt("챠트", Path.GetFileNameWithoutExtension(dbFile), "처방_증상");
+                }
             }
 
-            //진단
-            foreach (string dbFile in orderChartFiles)
+            workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TMdDx");
+
+            if (workItem != null)
             {
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
-                ConvertTMdDx("챠트", Path.GetFileNameWithoutExtension(dbFile), "진단명");
+                //진단
+                foreach (string dbFile in orderChartFiles)
+                {
+                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
+                    ConvertTMdDx("챠트", Path.GetFileNameWithoutExtension(dbFile), "진단명");
+                }
             }
 
-            //처방(수가, 재료)
-            foreach (string dbFile in orderChartFiles)
+
+            workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TMdPsb");
+
+            if (workItem != null)
             {
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
-                ConvertTMdPsb("챠트", Path.GetFileNameWithoutExtension(dbFile), "처방");
-            }
+                //처방(수가, 재료)
+                foreach (string dbFile in orderChartFiles)
+                {
+                    if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(2, 4)) < 1312) continue;
 
-            //처방전(약가)
-            //1101월 부터 특정내역 테이블 존재함.
-            string tempQueryId = "";
-            foreach(string dbFile in prescriptionFiles)
-            {
-                Logger.Logger.INFO(dbFile);
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
+                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
+                    ConvertTMdPsb("챠트", Path.GetFileNameWithoutExtension(dbFile), "처방");
+                }
 
-                //Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)
-                if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) > 1012) //2010년12월 이후
-                    tempQueryId = "처방2";
-                else
-                    tempQueryId = "처방";
+                //처방전(약가)
+                //1101월 부터 특정내역 테이블 존재함.
+                string tempQueryId = "";
+                foreach (string dbFile in prescriptionFiles)
+                {
+                    if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) < 1312) continue;
 
-                ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), tempQueryId);
-                //ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), "원내주사"); //원내주사는 처방과 겹침.
+                    Logger.Logger.INFO(dbFile);
+                    WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
+
+                    //Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)
+                    if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) > 1012) //2010년12월 이후
+                        tempQueryId = "처방2";
+                    else
+                        tempQueryId = "처방";
+
+                    ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), tempQueryId);
+                    //ConvertTMdPsb("처방전", Path.GetFileNameWithoutExtension(dbFile), "원내주사"); //원내주사는 처방과 겹침.
+                }
             }
         }
 
@@ -165,7 +186,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                         Logger.Logger.INFO(string.Format("챠트번호 : {0} 존재하지 않습니다.", dr["챠트번호"].ToString()));
                         continue;
                     }
-                    mnRcv.DeptId = Convert.ToInt32(dr["DEPT_ID"]);
+                    mnRcv.DeptCd = Convert.ToInt32(dr["DEPT_ID"]);
                     mnRcv.DiagType = dr["DIAG_TYPE"].ToString();
                     //mnRcv.ExpCd = "";
                     mnRcv.FstMedGb = dr["FIRST_MED_GB"].ToString();
@@ -560,7 +581,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
                         mdPsbLine.LineCd = dr["내역코드"].ToString();
                         mdPsbLine.LineMmoTxt = dr["내역"].ToString();
 
-                        mdPsbLine.InsDt = dr["Ymd"].ToString();
+                        mdPsbLine.InsDt = dr[dateName].ToString();//dr["Ymd"].ToString();
                         mdPsbLine.InsId = "TRN";
                         mdPsbLine.InsIp = "0.0.0.0";
                         mdPsbLine.UpdDt = DateTime.Now.ToString();

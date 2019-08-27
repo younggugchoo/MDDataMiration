@@ -88,7 +88,7 @@ namespace MD_DataMigration.Service.UISARANG
                         mnRcv.OldRcvNo = item.cno + item.jsdate.Replace("-", "");
                         mnRcv.PtntId = ptntId;
                         mnRcv.HosCd = mdParkService.GetBaseInfo.HosCd; //병원코드
-                        mnRcv.DeptId = Int32.Parse(item.subject);
+                        mnRcv.DeptCd = Int32.Parse(item.subject);
 
                         mnRcv.UserId = item.doctoruid;
 

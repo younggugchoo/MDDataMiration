@@ -23,15 +23,17 @@ namespace MD_DataMigration.Service.MDPARK.model
         [KeyAttribute]
         public string HosCd {get; set;}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int DeptId {get; set;}
+        /// <summary>
+        /// 
+        /// </summary>
+        //public int DeptId {get; set;}
 
-		/// <summary>
-		/// 진료 의사 id
-		/// </summary>
-		public string UserId {get; set;}
+        public int DeptCd { get; set; }
+
+        /// <summary>
+        /// 진료 의사 id
+        /// </summary>
+        public string UserId {get; set;}
 
 		/// <summary>
 		/// 

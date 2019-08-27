@@ -30,7 +30,10 @@ namespace MD_DataMigration.Service.BYEONGCOM
         public void ConvertData()
         {
             //환자정보 변환
-            ConvertTAcPtntInfo();
+            string workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TAcPtnt");
+           
+            if (workItem !=null)
+                ConvertTAcPtntInfo();
 
             //자보보험 이력
             //ConvertTAcCarInsuHist("환자정보", "자보보험");
@@ -43,10 +46,15 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //입원정보
 
             //진료색인(진료데이터) (접수)
-            ConvertTMnRcv("진료색인", "진료색인");  
+            workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TMnRcv");
+
+            if (workItem != null)
+                ConvertTMnRcv("진료색인", "진료색인");  
             
             //진료소견
 
+            //병리검사
+            
             //건강진단서 발급내역
 
             //방사선판독서
@@ -126,9 +134,14 @@ namespace MD_DataMigration.Service.BYEONGCOM
                     acPtntInfo.HosCd = mdParkService.GetBaseInfo.HosCd;
                     acPtntInfo.PtntCd = dr["챠트번호"].ToString();
                     acPtntInfo.PtntNm = dr["수진자명"].ToString();
-                    acPtntInfo.Jumin1 = dr["챠트번호"].ToString().Substring(0, 6);
-                    acPtntInfo.Jumin2 = dr["챠트번호"].ToString().Substring(6, 7);
 
+                    acPtntInfo.Jumin1 = "";
+                    acPtntInfo.Jumin2 = "";
+                    if (dr["챠트번호"].ToString().Length == 13)
+                    {
+                        acPtntInfo.Jumin1 = dr["챠트번호"].ToString().Substring(0, 6);
+                        acPtntInfo.Jumin2 = dr["챠트번호"].ToString().Substring(6, 7);
+                    }
 
                     acPtntInfo.Sex = dr["성별"].ToString().Equals("남")?  "M":"F";
                     acPtntInfo.BirthDy = dr["생년월일"].ToString().Replace("-", "");
@@ -242,7 +255,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                         mnRcv.OldRcvNo = dr["챠트번호"].ToString() + dr["진료일자"].ToString().Replace("-", "");
                         mnRcv.HosCd = mdParkService.GetBaseInfo.HosCd; //병원코드
-                        mnRcv.DeptId = Convert.ToInt32(dr["진료과"]);
+                        mnRcv.DeptCd = Convert.ToInt32(dr["진료과"]);
                         mnRcv.UserId = dr["보조문자열"].ToString();
                         mnRcv.OffId = 0; //Convert.ToInt32(dr["진료과"]);
                         mnRcv.RcvDt = dr["진료일자"].ToString() + " " + dr["접수시간"].ToString();

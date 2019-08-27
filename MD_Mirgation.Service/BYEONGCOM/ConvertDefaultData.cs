@@ -24,8 +24,12 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
         public void Convert()
         {
-            //기초자료..처방자료
-            ConvertTCmBsHosSet("처방자료","처방자료");
+
+            string workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TCmBsHosSet");
+
+            if (workItem != null)
+                //기초자료..처방자료
+                ConvertTCmBsHosSet("처방자료", "처방자료");
         }
 
         /// <summary>
@@ -38,7 +42,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
             {
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환시작", tableName));
 
-                #region select
+                
                 factory.DatabaseFactoryAccess(tDbFileName);
 
                 string strSql = ReadQuery.GetInstance(fileName).GetQueryText(string.Format("{0}.{1}", tDbFileName, tableName));
@@ -47,14 +51,14 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 int revId = 0;
                 DataSet ds = factory.ExecuteDataSet(strSql, System.Data.CommandType.Text, null);
-             
+
                 TCmBsHosSet cmBsHosSet = null;
 
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     revId = 1;
 
-
+                    cmBsHosSet = new TCmBsHosSet();
                     cmBsHosSet.MGb = dr["코드구분"].ToString();
                     cmBsHosSet.HosCd = mdParkService.GetBaseInfo.HosCd;
 
@@ -149,7 +153,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                     cmBsHosSet.RevId = revId;
 
-                    cmBsHosSet.EffFrom = dr["적용일"].ToString();
+                    cmBsHosSet.EffFrom = dr["적용일"].ToDateFormatNonDash();
                     cmBsHosSet.EffTo = "29991231";
 
                     //cmBsHosSet.RcptCd = "";
@@ -172,14 +176,14 @@ namespace MD_DataMigration.Service.BYEONGCOM
                     lstTcmBsHosSets.Add(cmBsHosSet);
 
                 }
-                
+
 
                 mdParkService.ExecuteInsertData(lstTcmBsHosSets);
 
-                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "ConvertTMdSympt"));
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "ConvertTCmBsHosSet"));
             }
         }
-
+    
 
     }
 }

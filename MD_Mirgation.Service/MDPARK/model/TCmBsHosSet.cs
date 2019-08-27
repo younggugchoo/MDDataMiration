@@ -14,9 +14,10 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// </summary>
         [ColunmException(true)]
         public int HosSetId { get; set; }
+        
 
         /// <summary>
-        /// 1: 수가, 3:약가, 8:재료가
+        /// 
         /// </summary>
         public string MGb { get; set; }
 
@@ -24,26 +25,6 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// 병원코드
         /// </summary>
         public string HosCd { get; set; }
-
-        /// <summary>
-        /// 심평원 수가코드 : null이 될 수 있는 것은 사용자가 임의로 작성한 코드가 있을 수 있기에.
-        /// </summary>
-        public string McCd { get; set; }
-
-        /// <summary>
-        /// 장코드(JANG_CD)
-        /// </summary>
-        public string JangCd { get; set; }
-
-        /// <summary>
-        /// 항번호(HANG_NO)
-        /// </summary>
-        public string HangNo { get; set; }
-
-        /// <summary>
-        /// 목번호(MO_NO)
-        /// </summary>
-        public string MoNo { get; set; }
 
         /// <summary>
         /// 사용자 코드
@@ -56,19 +37,44 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string Pkor { get; set; }
 
         /// <summary>
+        /// 심평원 수가코드 : null이 될 수 있는 것은 사용자가 임의로 작성한 코드가 있을 수 있기에.
+        /// </summary>
+        public string McCd { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Kor { get; set; }
+
+        /// <summary>
         /// 급여구분 ( SAL_NO_GB ) 급여, 비급여
         /// </summary>
         public string SalNoGb { get; set; }
 
         /// <summary>
-        /// 한글명(공통)
+        /// 적용일자
         /// </summary>
-        public string Kor { get; set; }
+        public string AdptDy { get; set; }
 
         /// <summary>
         /// 본인부담율 구분(공통) ( OVHD_RATE_GB )
         /// </summary>
         public string OvhdRateGb { get; set; }
+
+        /// <summary>
+        /// 급여기준(약가) : 급여, 삭제, 산정불가...
+        /// </summary>
+        public string DSalGb { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string DAdjPrice { get; set; }
+
+        /// <summary>
+        /// 용법 사용분류(약) : PSB_GB의 내복, 외용, 주사만 가져와야 함.
+        /// </summary>
+        public string DPath { get; set; }
 
         /// <summary>
         /// 규격
@@ -88,12 +94,77 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// <summary>
         /// 분류번호
         /// </summary>
-        public string DstbNo { get; set; }
+        public string DDstbNo { get; set; }
 
         /// <summary>
         /// 성분코드
         /// </summary>
         public string DMainIgdt { get; set; }
+
+        /// <summary>
+        /// 전문/일반(약가)
+        /// </summary>
+        public string DSpecialGb { get; set; }
+
+        /// <summary>
+        /// 퇴장방지(약가)
+        /// </summary>
+        public string DBackGb { get; set; }
+
+        /// <summary>
+        /// 의약품동등성(약가)
+        /// </summary>
+        public string DEql { get; set; }
+
+        /// <summary>
+        /// 저가대체가산구분여부(약가)
+        /// </summary>
+        public string DRepGb { get; set; }
+
+        /// <summary>
+        /// 예외의약품구분(약가)
+        /// </summary>
+        public string DExpGb { get; set; }
+
+        /// <summary>
+        /// 임의조제불가항목(약가)
+        /// </summary>
+        public string DOptDisab { get; set; }
+
+        /// <summary>
+        /// 고시일자(약가)
+        /// </summary>
+        public string DNotiDy { get; set; }
+
+        /// <summary>
+        /// 대응코드(약가)
+        /// </summary>
+        public string DActCd { get; set; }
+
+        /// <summary>
+        /// 희귀의약품구분(약가)
+        /// </summary>
+        public string DRareGb { get; set; }
+
+        /// <summary>
+        /// 판매예정일(약가)
+        /// </summary>
+        public string DSaleExpDy { get; set; }
+
+        /// <summary>
+        /// 동일의약품(약가)
+        /// </summary>
+        public string DSameDrug { get; set; }
+
+        /// <summary>
+        /// 청구규격(약가)
+        /// </summary>
+        public string DChgSpec { get; set; }
+
+        /// <summary>
+        /// 위험분담제유형(약가)
+        /// </summary>
+        public string DRiskShare { get; set; }
 
         /// <summary>
         /// 마약/향정 여부(약)  psychotropic substance ( D_PS_GB )
@@ -116,17 +187,7 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string DrgExcCd { get; set; }
 
         /// <summary>
-        /// 전문/일반(약가)
-        /// </summary>
-        public string DSpecialGb { get; set; }
-
-        /// <summary>
-        /// 용법 사용분류(약) : PSB_GB의 내복, 외용, 주사만 가져와야 함.
-        /// </summary>
-        public string DPath { get; set; }
-
-        /// <summary>
-        /// 
+        /// 주사구분( INJECTION_GB ) : 주사 100ml 미만, IVS 등
         /// </summary>
         public string InjectionGb { get; set; }
 
@@ -138,12 +199,12 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// <summary>
         /// 횟수
         /// </summary>
-        public int DoseCnt { get; set; }
+        public string DoseCnt { get; set; }
 
         /// <summary>
         /// 일수
         /// </summary>
-        public int DoseDays { get; set; }
+        public string DoseDays { get; set; }
 
         /// <summary>
         /// 제한용량
@@ -153,12 +214,12 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// <summary>
         /// 제한횟수
         /// </summary>
-        public int LimitDoseCnt { get; set; }
+        public string LimitDoseCnt { get; set; }
 
         /// <summary>
         /// 제한일수
         /// </summary>
-        public int LimitDoseDays { get; set; }
+        public string LimitDoseDays { get; set; }
 
         /// <summary>
         /// 용량세부조건(약) ( CAPA_DTL_GB )
@@ -171,6 +232,11 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string CDistCd { get; set; }
 
         /// <summary>
+        /// 영문명(수가)
+        /// </summary>
+        public string CEng { get; set; }
+
+        /// <summary>
         /// 1_2 구분
         /// </summary>
         public string COt { get; set; }
@@ -181,14 +247,9 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string CSgyYn { get; set; }
 
         /// <summary>
-        /// 중복인정여부
+        /// 
         /// </summary>
-        public string DupYn { get; set; }
-
-        /// <summary>
-        /// 영문명(수가)
-        /// </summary>
-        public string CEng { get; set; }
+        public string CScr { get; set; }
 
         /// <summary>
         /// 산정명칭
@@ -199,6 +260,16 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// 준용명칭 ( EQUIV_GB )
         /// </summary>
         public string EquivGb { get; set; }
+
+        /// <summary>
+        /// 장구분(수가) : C_JANG_CD
+        /// </summary>
+        public string CJangCd { get; set; }
+
+        /// <summary>
+        /// 중복인정여부(수가, 치료재료)
+        /// </summary>
+        public string DupYn { get; set; }
 
         /// <summary>
         /// 행위가산 ( ACT_ADD_GB )
@@ -236,19 +307,24 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string MUnit { get; set; }
 
         /// <summary>
-        /// 재질(치료재료)
-        /// </summary>
-        public string MMaterial { get; set; }
-
-        /// <summary>
         /// 제조회사(치료재료)
         /// </summary>
         public string MMaker { get; set; }
 
         /// <summary>
+        /// 재질(치료재료)
+        /// </summary>
+        public string MMaterial { get; set; }
+
+        /// <summary>
         /// 수입업소(치료재료)
         /// </summary>
         public string MImporter { get; set; }
+
+        /// <summary>
+        /// 정액수가여부(치료재료)
+        /// </summary>
+        public string MFixPriceYn { get; set; }
 
         /// <summary>
         /// 심평원 신고여부(치료재료) ( REPORT_GB )
@@ -276,77 +352,77 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string LineMmo { get; set; }
 
         /// <summary>
-        /// 성별 ( SEX )
+        /// 청구_성별 ( SEX )
         /// </summary>
         public string Sex { get; set; }
 
         /// <summary>
-        /// 임산부제한(약가) PG_GB
+        /// 청구_임산부제한(약가) PG_GB
         /// </summary>
         public string PgGb { get; set; }
 
         /// <summary>
-        /// 나이제한 구분
+        /// 청구_나이제한 구분
         /// </summary>
         public string AgeLmtGb { get; set; }
 
         /// <summary>
-        /// 남자나이미만
+        /// 청구_남자나이미만
         /// </summary>
         public int ManUnder { get; set; }
 
         /// <summary>
-        /// 남자나이이상
+        /// 청구_남자나이이상
         /// </summary>
         public int ManOver { get; set; }
 
         /// <summary>
-        /// 여자나이미만
+        /// 청구_여자나이미만
         /// </summary>
         public int WmUnder { get; set; }
 
         /// <summary>
-        /// 여자나이이상
+        /// 청구_여자나이이상
         /// </summary>
         public int WmOver { get; set; }
 
         /// <summary>
-        /// 용법예문코드id
+        /// 청구_용법예문코드id
         /// </summary>
         public int SmpTxtId { get; set; }
 
         /// <summary>
-        /// 분할처방(약가) : POS_PSB_GB
+        /// 청구_분할처방(약가) : POS_PSB_GB
         /// </summary>
         public string PohPsbGb { get; set; }
 
         /// <summary>
-        /// 1회투여량(약가)
+        /// 
         /// </summary>
         public string Qd { get; set; }
 
         /// <summary>
-        /// 일총투여량(약가)
+        /// 청구_일총투여량(약가)
         /// </summary>
         public int Sd { get; set; }
 
         /// <summary>
-        /// 1회 처방일수(약가)
+        /// 청구_1회 처방일수(약가)
         /// </summary>
         public int Td { get; set; }
 
         /// <summary>
-        /// 총 처방일수(약가) : PSB_LMT_DY_GB
+        /// 청구_1년내 처방제한횟수
         /// </summary>
-        public string PsbLmtDyGb { get; set; }
+        public int YrLmtCnt { get; set; }
 
         /// <summary>
-        /// 처방제한일수(약가) : 일/년/월별로 00회로 제한된 처방
+        /// 청구_1개월내 처방제한횟수
         /// </summary>
-        public int PsbLmtDy { get; set; }
+        public int MoLmtCnt { get; set; }
 
         /// <summary>
-        /// 초진처방구분 ( FM_GB )
+        /// 청구_초진처방구분 ( FM_GB )
         /// </summary>
         public string FmGb { get; set; }
 
@@ -354,11 +430,6 @@ namespace MD_DataMigration.Service.MDPARK.model
         /// 초진처방 주의사항
         /// </summary>
         public string FmGbRmk { get; set; }
-
-        /// <summary>
-        /// 처방횟수
-        /// </summary>
-        public string PsbCntGb { get; set; }
 
         /// <summary>
         /// 용법(약가) 예문 코드
@@ -371,37 +442,32 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string SearchTxt { get; set; }
 
         /// <summary>
-        /// 심평원 보험가격 : 약가, 수가일 경우 심평원 가격
+        /// 
         /// </summary>
         public string EdiPrice { get; set; }
 
         /// <summary>
-        /// 일반가격(비보험가격)
+        /// 
         /// </summary>
         public string GeneralPrice { get; set; }
 
         /// <summary>
-        /// 자보가격
+        /// 
         /// </summary>
         public string CarInsPrice { get; set; }
 
         /// <summary>
-        /// 산재가격
+        /// 
         /// </summary>
         public string IaciPrice { get; set; }
 
         /// <summary>
-        /// 상한가 : 약가 및 치료재료에 해당됨.
+        /// 
         /// </summary>
         public string HighLmtPrice { get; set; }
 
         /// <summary>
-        /// 상대가치점수
-        /// </summary>
-        public string CStr { get; set; }
-
-        /// <summary>
-        /// 심평원 신고가(치료재료)
+        /// 
         /// </summary>
         public string EdiRptPrice { get; set; }
 
@@ -451,6 +517,21 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string P100 { get; set; }
 
         /// <summary>
+        /// 항번호(HANG_NO)
+        /// </summary>
+        public string HangNo { get; set; }
+
+        /// <summary>
+        /// 목번호(MO_NO)
+        /// </summary>
+        public string MoNo { get; set; }
+
+        /// <summary>
+        /// 묶음 카테고리 id
+        /// </summary>
+        public int CateBunchId { get; set; }
+
+        /// <summary>
         /// data 생성자 id
         /// </summary>
         public string InsId { get; set; }
@@ -481,9 +562,31 @@ namespace MD_DataMigration.Service.MDPARK.model
         public string UpdIp { get; set; }
 
         /// <summary>
-        /// 
+        /// test tab에서 사용할 구분값 ex : 방사선
         /// </summary>
-        public int CateBunchId { get; set; }
+        public string TestCateTab { get; set; }
+
+        /// <summary>
+        /// 검체검사 참고치 메모
+        /// </summary>
+        public string ReferenceMmo { get; set; }
+
+        /// <summary>
+        /// 사용분류 대 카테고리
+        /// </summary>
+        public string BsLCate { get; set; }
+
+        /// <summary>
+        /// 사용분류 중 카테고리
+        /// </summary>
+        public string BsMCate { get; set; }
+
+        /// <summary>
+        /// 사용분류 소 카테고리
+        /// </summary>
+        public string BsSCate { get; set; }
+
+
 
     }
 }

@@ -27,8 +27,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
         public event LogEventHandler WorkingInfo;
         public event EventHandler Convert_Completed;
-
-        
+               
 
         public void Dispose()
         {
@@ -129,37 +128,27 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
             //진료자료
             //환자정보, 접수
-            string workItem = baseInfo.ConvertItems.FirstOrDefault(x => x == "TAcPtnt");
-
-            if (workItem != null)
+   
+            using (ConvertDiagnosisData convertDiagnosisData = new ConvertDiagnosisData(mdParkService))
             {
-                using (ConvertDiagnosisData convertDiagnosisData = new ConvertDiagnosisData(mdParkService))
-                {
-                    convertDiagnosisData.ConvertData();
-                }
+                convertDiagnosisData.ConvertData();
             }
-
-
+            
+            
             //차트자료
             //증상, 진단, 처방
             WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, "차트자료 StartConvert");
             ConvertChartData convertChartData = new ConvertChartData(mdParkService, this.WorkingInfo);
             convertChartData.ConvertData();
                 
-
-
-            /*
             //부가자료
             ConvertAdditionalData convertAdditionalData = new ConvertAdditionalData(mdParkService);
             convertAdditionalData.Convert();
-
-
+            
             //기초자료
             ConvertDefaultData convertDefaultData = new ConvertDefaultData(mdParkService);
             convertDefaultData.Convert();
-            */
-
-
+                        
             WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, "BYEONGCOMService EndConvert");
 
             MdParkService_Convert_Completed (null,null);
@@ -174,10 +163,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
         {
             Convert_Completed(null, null);
         }
-
-
-
-
+                     
         #region Convert Function Base
         //public void Convert_(string tDbFileName, string tableName)
         //{

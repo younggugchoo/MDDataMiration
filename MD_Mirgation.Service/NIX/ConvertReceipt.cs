@@ -84,7 +84,7 @@ namespace MD_DataMigration.Service.NIX
                         mnRcv.OldRcvNo = dr["Code"].ToStringTrim() + dr["Ymd"].ToStringTrim().Replace("-", "");
                         mnRcv.PtntId = ptntId;
                         mnRcv.HosCd = mdParkService.GetBaseInfo.HosCd; //병원코드
-                        mnRcv.DeptId = Convert.ToInt32(dr["Gb2"].ToStringTrim());
+                        mnRcv.DeptCd = Convert.ToInt32(dr["Gb2"].ToStringTrim());
 
                         mnRcv.UserId = dr["license"].ToStringTrim(); //retrieveUserId(dr["Ymd"].ToStringTrim().Replace("-", ""), dr["Code"].ToStringTrim(), month); //  dr["보조문자열"].ToString(); //의사면허번호
 
