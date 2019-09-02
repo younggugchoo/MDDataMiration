@@ -99,20 +99,21 @@ namespace MD_DataMigration.Service.BYEONGCOM
             if (workItem != null)
             {
                 //처방(수가, 재료)
+                
                 foreach (string dbFile in orderChartFiles)
                 {
-                    if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(2, 4)) < 1312) continue;
+                    //if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(2, 4)) < 1312) continue; //특정월 이후 데이터 이관 실패시 사용
 
                     WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
                     ConvertTMdPsb("챠트", Path.GetFileNameWithoutExtension(dbFile), "처방");
                 }
-
+                
                 //처방전(약가)
                 //1101월 부터 특정내역 테이블 존재함.
                 string tempQueryId = "";
                 foreach (string dbFile in prescriptionFiles)
                 {
-                    if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) < 1312) continue;
+                   // if (Convert.ToInt32(Path.GetFileNameWithoutExtension(dbFile).Substring(3, 4)) < 1208) continue; //특정월 이후 데이터 이관 실패시 사용
 
                     Logger.Logger.INFO(dbFile);
                     WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, dbFile);
@@ -608,10 +609,12 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 mdParkService.ExecuteInsertData(lstTMdPsb);
 
+                mdParkService.RemoveDtTMnRcvPsb();
+
                 //줄단위 메모데이터 처리
                 foreach (TMdPsbLine item in lstTMPsbLine)
                 {
-                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd);
+                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd, item.InsDt.Substring(0, 7));
 
                     if (item.PsbId == 0)
                     {
@@ -621,6 +624,8 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 }
 
                 mdParkService.ExecuteInsertData(lstTMPsbLine);
+
+
 
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "처방" + tDbFileName));
 

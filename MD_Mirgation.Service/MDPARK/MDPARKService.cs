@@ -518,7 +518,7 @@ namespace MD_DataMigration.Service.MDPARK
         /// <param name="ptntId"></param>
         /// <param name="oldRcvNo"></param>
         /// <returns></returns>
-        public int GetPsbId(int rcvId, string psbCd)
+        public int GetPsbId(int rcvId, string psbCd, string yyyymm)
         {
             int psbId = 0;
 
@@ -530,7 +530,7 @@ namespace MD_DataMigration.Service.MDPARK
                     "   a.rcv_id, b.psb_id, b.psb_cd " +
                     " FROM t_mn_rcv a" +
                     " join t_md_psb b on a.rcv_id = b.rcv_id" +
-                    " WHERE a.hos_cd='{0}' ", GetBaseInfo.HosCd);
+                    " WHERE a.hos_cd='{0}' AND DATE_FORMAT(a.rcv_dt, '%Y-%m') = '{1}' ", GetBaseInfo.HosCd, yyyymm);
 
                 using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
                 {
@@ -549,6 +549,11 @@ namespace MD_DataMigration.Service.MDPARK
             }
 
             return psbId;
+        }
+
+        public void RemoveDtTMnRcvPsb()
+        {
+            dtTMnRcvPsb = null;
         }
 
         #endregion 병컴 데이터 변환 관련 함수

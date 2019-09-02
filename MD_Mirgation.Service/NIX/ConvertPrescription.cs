@@ -199,11 +199,12 @@ namespace MD_DataMigration.Service.NIX
                 }
 
                 mdParkService.ExecuteInsertData(lstTMdPsb);
+                mdParkService.RemoveDtTMnRcvPsb();
 
                 //줄단위 메모데이터 처리
                 foreach (TMdPsbLine item in lstTMPsbLine)
                 {
-                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd);
+                    item.PsbId = mdParkService.GetPsbId(item.RcvId, item.PsbCd, item.InsDt.Substring(0, 7));
 
                     if (item.PsbId == 0)
                     {

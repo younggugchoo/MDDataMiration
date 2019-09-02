@@ -46,6 +46,10 @@
             this.label27 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.cboUisarangEndYear = new System.Windows.Forms.ComboBox();
+            this.cboUisarangStartYear = new System.Windows.Forms.ComboBox();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.rad3 = new System.Windows.Forms.RadioButton();
@@ -106,10 +110,6 @@
             this.lstFailList = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.cboUisarangEndYear = new System.Windows.Forms.ComboBox();
-            this.cboUisarangStartYear = new System.Windows.Forms.ComboBox();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
             this.panel4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -326,6 +326,44 @@
             this.tabPage8.TabIndex = 2;
             this.tabPage8.Text = "tabPage8";
             // 
+            // cboUisarangEndYear
+            // 
+            this.cboUisarangEndYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUisarangEndYear.FormattingEnabled = true;
+            this.cboUisarangEndYear.Location = new System.Drawing.Point(184, 44);
+            this.cboUisarangEndYear.Name = "cboUisarangEndYear";
+            this.cboUisarangEndYear.Size = new System.Drawing.Size(70, 20);
+            this.cboUisarangEndYear.TabIndex = 6;
+            this.cboUisarangEndYear.SelectedIndexChanged += new System.EventHandler(this.cboUisarangEndYear_SelectedIndexChanged);
+            // 
+            // cboUisarangStartYear
+            // 
+            this.cboUisarangStartYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUisarangStartYear.FormattingEnabled = true;
+            this.cboUisarangStartYear.Location = new System.Drawing.Point(89, 44);
+            this.cboUisarangStartYear.Name = "cboUisarangStartYear";
+            this.cboUisarangStartYear.Size = new System.Drawing.Size(70, 20);
+            this.cboUisarangStartYear.TabIndex = 7;
+            this.cboUisarangStartYear.SelectedIndexChanged += new System.EventHandler(this.cboUisarangStartYear_SelectedIndexChanged);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(165, 49);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(14, 12);
+            this.label29.TabIndex = 3;
+            this.label29.Text = "~";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(15, 47);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(53, 12);
+            this.label30.TabIndex = 4;
+            this.label30.Text = "변환년도";
+            // 
             // label26
             // 
             this.label26.AutoSize = true;
@@ -425,7 +463,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(716, 568);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "인사담당자 연락처";
+            this.tabPage2.Text = "기본정보";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // comboBox1
@@ -836,6 +874,7 @@
             this.workName,
             this.progress});
             this.lstWorkList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstWorkList.HideSelection = false;
             this.lstWorkList.Location = new System.Drawing.Point(0, 0);
             this.lstWorkList.Name = "lstWorkList";
             this.lstWorkList.Size = new System.Drawing.Size(272, 293);
@@ -877,6 +916,7 @@
             this.chkDeletePrevData.TabIndex = 26;
             this.chkDeletePrevData.Text = "이전데이터 삭제";
             this.chkDeletePrevData.UseVisualStyleBackColor = true;
+            this.chkDeletePrevData.Visible = false;
             // 
             // label10
             // 
@@ -957,44 +997,6 @@
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(700, 192);
             this.txtLog.TabIndex = 18;
-            // 
-            // cboUisarangEndYear
-            // 
-            this.cboUisarangEndYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboUisarangEndYear.FormattingEnabled = true;
-            this.cboUisarangEndYear.Location = new System.Drawing.Point(184, 44);
-            this.cboUisarangEndYear.Name = "cboUisarangEndYear";
-            this.cboUisarangEndYear.Size = new System.Drawing.Size(70, 20);
-            this.cboUisarangEndYear.TabIndex = 6;
-            this.cboUisarangEndYear.SelectedIndexChanged += new System.EventHandler(this.cboUisarangEndYear_SelectedIndexChanged);
-            // 
-            // cboUisarangStartYear
-            // 
-            this.cboUisarangStartYear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboUisarangStartYear.FormattingEnabled = true;
-            this.cboUisarangStartYear.Location = new System.Drawing.Point(89, 44);
-            this.cboUisarangStartYear.Name = "cboUisarangStartYear";
-            this.cboUisarangStartYear.Size = new System.Drawing.Size(70, 20);
-            this.cboUisarangStartYear.TabIndex = 7;
-            this.cboUisarangStartYear.SelectedIndexChanged += new System.EventHandler(this.cboUisarangStartYear_SelectedIndexChanged);
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(165, 49);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(14, 12);
-            this.label29.TabIndex = 3;
-            this.label29.Text = "~";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(15, 47);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(53, 12);
-            this.label30.TabIndex = 4;
-            this.label30.Text = "변환년도";
             // 
             // frmConvert
             // 

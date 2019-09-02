@@ -216,6 +216,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 for (int sYear = minYear; sYear <= maxYear; sYear++)
                 {
+                    
                     Logger.Logger.INFO("접수데이터:" + sYear.ToString());
                     //continue;
 
