@@ -34,6 +34,8 @@ namespace MD_DataMigration.Service.MDPARK
 
         public DataTable dtTMnRcvPsb { get; set; }
 
+        public DataTable dtTMnRcvLastRcvId { get; set; }
+
         public MDPARKService()
         {
             //if (!value.Equals(""))
@@ -304,6 +306,52 @@ namespace MD_DataMigration.Service.MDPARK
         }
 
         /// <summary>
+        /// 마지막 진료일자의 접수번호조회
+        /// </summary>
+        /// <param name="ptntId"></param>
+        /// <returns></returns>
+        public int GetLastRcvId(int ptntId)
+        {  
+            string sql = "";
+            if (dtTMnRcvLastRcvId == null)
+            {
+                sql = string.Format(
+                    "SELECT " +
+                    "   ptnt_id, max(rcv_id) as rcv_id" +
+                    " FROM t_mn_rcv" +
+                    " WHERE hos_cd='{0}' " +
+                    " GROUP BY ptnt_id" +
+                    "", GetBaseInfo.HosCd);
+
+                using (Data.DatabaseFactory factory = new Data.DatabaseFactory(factoryName))
+                {
+                    dtTMnRcvLastRcvId = factory.ExecuteDataSet(sql).Tables[0];
+
+                    //convertedTMnRcvInfos = dt.DataTableToList<TMnRcv>();
+                }
+            }
+
+            // var dataRow = dtTMnRcv.AsEnumerable().Where(x => x.Field<int>("ptnt_id") == ptntId);
+            //DataTable dt = dataRow.CopyToDataTable<DataRow>();
+
+            //DataTable dt = dataRow.CopyToDataTable<DataRow>();
+
+            int rcvId = 0;
+            try
+            {
+                DataTable dt2 = dtTMnRcvLastRcvId.Select(string.Format("ptnt_id = {0}", ptntId.ToString())).CopyToDataTable();
+                rcvId = Convert.ToInt32(dt2.Rows[0]["rcv_id"]);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
+            return rcvId;
+
+        }
+
+        /// <summary>
         /// 환자ID 조회 (MDPark ID)
         /// </summary>
         /// <param name="hosCd"></param>
@@ -333,12 +381,15 @@ namespace MD_DataMigration.Service.MDPARK
             return acPtntInfos;
         }
 
+        /// <summary>
+        /// 챠트번호(환자번호)조회
+        /// </summary>
+        /// <param name="chartNum"></param>
+        /// <returns></returns>
         public int GetPtntIdMdPark(string chartNum)
         {
-
             //return retrievePtntIdFromByeongcom(chartNum);
-
-            
+                       
             int ptntId = 0;
 
             if (convertedTAcPtntInfos == null)
@@ -347,8 +398,6 @@ namespace MD_DataMigration.Service.MDPARK
             }
             TAcPtnt acPtnt = convertedTAcPtntInfos.Where(x => x.PtntCd == chartNum).DefaultIfEmpty().First();
             
-
-
             return acPtnt == null ? 0 : acPtnt.PtntId;
         }
 

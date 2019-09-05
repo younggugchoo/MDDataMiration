@@ -49,12 +49,12 @@ namespace MD_DataMigration.Service.BYEONGCOM
             workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TMnRcv");
 
             if (workItem != null)
-                ConvertTMnRcv("진료색인", "진료색인");  
-            
+                ConvertTMnRcv("진료색인", "진료색인");
+
             //진료소견
 
             //병리검사
-            
+
             //건강진단서 발급내역
 
             //방사선판독서
@@ -92,6 +92,11 @@ namespace MD_DataMigration.Service.BYEONGCOM
             //백신접종표
 
             //환자의 과거력
+
+            
+            workItem = mdParkService.GetBaseInfo.ConvertItems.FirstOrDefault(x => x == "TAcMemo");
+            if (workItem != null)
+                ConvertTAcMemo();
         }
 
 
@@ -348,7 +353,122 @@ namespace MD_DataMigration.Service.BYEONGCOM
             }
             */
         }
-        
+
+
+        #region 환자과거력
+        private void ConvertTAcMemo()
+        {
+
+            string tDbFileName = "과거력";
+            string tableName = "과거력";
+
+            using (Data.DatabaseFactory factory = new Data.DatabaseFactory())
+            {
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환시작", tableName));
+
+                List<TAcMemo> lstAcMemo = new List<TAcMemo>();
+
+                #region select
+                factory.DatabaseFactoryAccess(tDbFileName);
+
+                string strSql = ReadQuery.GetInstance(fileName).GetQueryText(string.Format("{0}.{1}", tDbFileName, tableName));
+
+                #endregion
+
+                DataSet ds = factory.ExecuteDataSet(strSql, System.Data.CommandType.Text, null);
+
+                TAcMemo acMemo = null;
+                int ptntId = 0;
+                int rcvId = 0;
+
+                string prevChartNo = "";
+                StringBuilder strMemo = null;
+
+                #region convert
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    try
+                    {
+                        if (!prevChartNo.Equals(dr["챠트번호"].ToString()))
+                            ptntId = mdParkService.GetPtntIdMdPark(dr["챠트번호"].ToString());
+
+                        if (ptntId == 0)
+                        {
+                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("챠트번호 : {0}에 해당하는 환자정보가 없습니다.", dr["챠트번호"].ToString()));
+                            Logger.Logger.INFO(string.Format("챠트번호 : {0}에 해당하는 환자정보가 없습니다.", dr["챠트번호"].ToString()));
+                            prevChartNo = dr["챠트번호"].ToString();
+                            continue;
+                        }
+                    }
+                    catch (DuplicateNameException ex)
+                    {
+                        WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("챠트번호 : {0} 1개이상이 존재합니다.", dr["챠트번호"].ToString()));
+                        Logger.Logger.INFO(string.Format("챠트번호 : {0} 1개이상이 존재합니다..", dr["챠트번호"].ToString()));
+                        prevChartNo = dr["챠트번호"].ToString();
+                        continue;
+                    }
+
+
+                    if (!prevChartNo.Equals(dr["챠트번호"].ToString()))
+                    {
+                        if (acMemo != null)
+                        {
+                            acMemo.MemoCnt = strMemo.ToString();
+                            lstAcMemo.Add(acMemo);
+                        }
+
+                        rcvId = mdParkService.GetLastRcvId(ptntId);
+
+                        if (rcvId != 0)
+                        {
+                            strMemo = new StringBuilder();
+                            strMemo.AppendLine(dr["내용"].ToString());
+
+                            acMemo = new TAcMemo();
+                            acMemo.RcvId = rcvId;
+                            acMemo.MemoType = "5";
+                            //acMemo.MemoCnt = dr["내용"].ToString();
+
+                            acMemo.InsDt = DateTime.Now.ToString(); //dr["최초접수일"].ToString();
+                            acMemo.InsId = "TRN";
+                            acMemo.UpdId = "TRN";
+                            acMemo.InsIp = "0.0.0.0";
+                            acMemo.UpdIp = "0.0.0.0";
+                            acMemo.UpdDt = DateTime.Now.ToString();
+                        }
+
+                        else
+                        {
+                            WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.FAIL, string.Format("과거력 : {0}의 진료정보가 존재하지 않습니다.", dr["챠트번호"].ToString()));
+                            Logger.Logger.INFO(string.Format("과거력 : {0}의 진료정보가 존재하지 않습니다.", dr["챠트번호"].ToString()));
+                            prevChartNo = dr["챠트번호"].ToString();
+                            continue;
+                        }
+
+                    }
+                    else
+                    {
+                        strMemo.AppendLine(dr["내용"].ToString());                        
+                    }
+
+                    prevChartNo = dr["챠트번호"].ToString();
+                }
+
+                #endregion
+
+                if (acMemo != null)
+                {
+                    acMemo.MemoCnt = strMemo.ToString();
+                    lstAcMemo.Add(acMemo);
+                }
+
+                mdParkService.ExecuteInsertData(lstAcMemo);
+
+                WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", tableName));
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// 산재정보

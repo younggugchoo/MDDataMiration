@@ -444,7 +444,14 @@ namespace MD_DataMigration.Forms
             item.Tag = "TCmBsHosSet";
             lstWorkList.Items.Add(item);
 
-            
+            item = new ListViewItem();
+            item.SubItems.Add("과거력");
+            item.SubItems.Add("");
+            item.Checked = false;
+            item.Tag = "TAcMemo";
+            lstWorkList.Items.Add(item);
+
+
 
 
 

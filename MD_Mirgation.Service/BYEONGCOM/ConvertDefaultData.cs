@@ -54,8 +54,11 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 TCmBsHosSet cmBsHosSet = null;
 
+                int price = 0;
+
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
+                    price = 0;
                     revId = 1;
 
                     cmBsHosSet = new TCmBsHosSet();
@@ -139,15 +142,18 @@ namespace MD_DataMigration.Service.BYEONGCOM
                     */
 
                     cmBsHosSet.SearchTxt = "";
-                    /*
-                    cmBsHosSet.EdiPrice = "";
-                    cmBsHosSet.GeneralPrice = "";
-                    cmBsHosSet.CarInsPrice = "";
-                    cmBsHosSet.IaciPrice = "";
-                    cmBsHosSet.HighLmtPrice = "";
-                    cmBsHosSet.CStr = "";
-                    cmBsHosSet.EdiRptPrice = "";
-                    */
+
+
+                    price = GetPrice(dr["재료가"].ToInt32(), dr["행위가"].ToInt32(), dr["일반가"].ToInt32());
+
+                    cmBsHosSet.EdiPrice = price.ToString();
+                    cmBsHosSet.GeneralPrice = price.ToString();
+                    cmBsHosSet.CarInsPrice = price.ToString();
+                    cmBsHosSet.IaciPrice = price.ToString();
+                    cmBsHosSet.HighLmtPrice = price.ToString();
+                    //cmBsHosSet.CStr = "";
+                    cmBsHosSet.EdiRptPrice = price.ToString();
+
 
                     cmBsHosSet.UseYn = "Y";
 
@@ -182,6 +188,29 @@ namespace MD_DataMigration.Service.BYEONGCOM
 
                 WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, String.Format("{0} 변환종료", "ConvertTCmBsHosSet"));
             }
+        }
+
+        private int GetPrice(int a, int b, int c)
+        {
+
+            int max= 0;
+
+            if (a >= b)
+            {
+                max = a;
+            }
+            else
+            {
+                max = b;
+            }
+
+            if (max < c)
+            {
+                max = c;
+            }
+
+            return max;
+
         }
     
 
