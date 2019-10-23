@@ -1,4 +1,5 @@
-﻿using MD_DataMigration.Service.MDPARK.model;
+﻿using MD_DataMigration.Data;
+using MD_DataMigration.Service.MDPARK.model;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace MD_DataMigration.Service.MDPARK
         public event LogEventHandler WorkingInfo;
         public event EventHandler Convert_Completed;
 
+        public List<TMdBunchCate> convertedTMdBunchCate = (List<TMdBunchCate>)null;
+        public List<TMdBunch> convertedTMdBunch = (List<TMdBunch>)null;
 
 
         //변환된 환자목록
@@ -266,6 +269,28 @@ namespace MD_DataMigration.Service.MDPARK
         }
 
         #region 병컴 데이터 변환 관련 함수
+
+        public List<TMdBunchCate> retrieveTMdBunchCate(string userId, string cateGb)
+        {
+            if (this.convertedTMdBunchCate == null)
+            {
+                string commandText = string.Format("SELECT    cate_bunch_id, user_id, cate_bunch_nm, cate_seq, cate_gb FROM t_md_bunch_cate WHERE user_id='{0}' AND cate_gb = '{1}'", (object)userId, (object)cateGb);
+                using (DatabaseFactory databaseFactory = new DatabaseFactory(this.factoryName))
+                    this.convertedTMdBunchCate = databaseFactory.ExecuteDataSet(commandText).Tables[0].DataTableToList<TMdBunchCate>();
+            }
+            return this.convertedTMdBunchCate;
+        }
+
+        public List<TMdBunch> retrieveTMdBunch(string userId, string cateGb)
+        {
+            if (this.convertedTMdBunch == null)
+            {
+                string commandText = string.Format("SELECT    B.bunch_id, B.cate_bunch_id, B.bunch_nm, B.bunch_cd, B.bunch_seq FROM t_md_bunch_cate A JOIN t_md_bunch B ON A.cate_bunch_id = B.cate_bunch_id WHERE A.user_id='{0}' AND B.ins_id ='TRN' AND B.ins_dt='{1}' AND A.cate_gb='{2}'", (object)userId, (object)DateTime.Now.ToShortDateString(), (object)cateGb);
+                using (DatabaseFactory databaseFactory = new DatabaseFactory(this.factoryName))
+                    this.convertedTMdBunch = databaseFactory.ExecuteDataSet(commandText).Tables[0].DataTableToList<TMdBunch>();
+            }
+            return this.convertedTMdBunch;
+        }
 
         /// <summary>
         /// 병컴데이터에서 이관된 환자의 Ptnt_id 조회

@@ -22,7 +22,7 @@ namespace MD_DataMigration.Service.BYEONGCOM
             this.mdParkService = mDPARKService;
         }
 
-        public void Convert()
+        public void ConvertData()
         {
 
         }

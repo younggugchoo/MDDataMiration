@@ -143,11 +143,11 @@ namespace MD_DataMigration.Service.BYEONGCOM
                 
             //부가자료
             ConvertAdditionalData convertAdditionalData = new ConvertAdditionalData(mdParkService);
-            convertAdditionalData.Convert();
+            convertAdditionalData.ConvertData();
             
             //기초자료
             ConvertDefaultData convertDefaultData = new ConvertDefaultData(mdParkService);
-            convertDefaultData.Convert();
+            convertDefaultData.ConvertData();
                         
             WorkingInfo?.Invoke(CommonStatic.WORK_RESULT.NONE, "BYEONGCOMService EndConvert");
 

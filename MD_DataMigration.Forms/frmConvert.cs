@@ -451,6 +451,20 @@ namespace MD_DataMigration.Forms
             item.Tag = "TAcMemo";
             lstWorkList.Items.Add(item);
 
+            item = new ListViewItem();
+            item.SubItems.Add("묶음처방&진단");
+            item.SubItems.Add("");
+            item.Checked = false;
+            item.Tag = "TMdBunch";
+            lstWorkList.Items.Add(item);
+
+            item = new ListViewItem();
+            item.SubItems.Add("묶음약");
+            item.SubItems.Add("");
+            item.Checked = false;
+            item.Tag = "TMdBunchDrug";
+            lstWorkList.Items.Add(item);
+
 
 
 
